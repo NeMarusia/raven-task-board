@@ -1162,3 +1162,109 @@ body.parrot-mode .task-card.done-card,
 body.parrot-mode .today-mini {
   opacity: 1;
 }
+
+/* Parrot-mode unification pass: glassy pastel, readable counters, no black-on-green goblin buttons. */
+body.parrot-mode button,
+body.parrot-mode .file-label {
+  color: #244019;
+}
+body.parrot-mode .header-actions > button,
+body.parrot-mode .header-actions > .file-label,
+body.parrot-mode .focus-actions button,
+body.parrot-mode #taskForm button[type="submit"],
+body.parrot-mode .edit-actions button[type="submit"] {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.96), rgba(236,253,245,.84) 52%, rgba(224,242,254,.78));
+  color: #244019;
+  border: 1px solid rgba(20,184,166,.20);
+  box-shadow: 0 14px 30px rgba(20,184,166,.10), inset 0 0 0 1px rgba(255,255,255,.8);
+}
+body.parrot-mode .header-actions > button:hover,
+body.parrot-mode .header-actions > .file-label:hover,
+body.parrot-mode .focus-actions button:hover,
+body.parrot-mode #taskForm button[type="submit"]:hover,
+body.parrot-mode .edit-actions button[type="submit"]:hover {
+  transform: translateY(-1px);
+  border-color: rgba(6,182,212,.34);
+  box-shadow: 0 18px 34px rgba(14,165,233,.14), inset 0 0 0 1px rgba(255,255,255,.9);
+}
+body.parrot-mode #taskForm button[type="submit"],
+body.parrot-mode .edit-actions button[type="submit"],
+body.parrot-mode #focusStart {
+  background: linear-gradient(135deg, #22c55e, #14b8a6 58%, #06b6d4);
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.22);
+  border-color: rgba(21,128,61,.28);
+  box-shadow: 0 16px 34px rgba(20,184,166,.24), inset 0 0 0 1px rgba(255,255,255,.22);
+}
+body.parrot-mode .danger,
+body.parrot-mode #resetBtn {
+  background: linear-gradient(135deg, rgba(255,228,230,.94), rgba(254,202,202,.82));
+  color: #9f1239;
+  border-color: rgba(244,63,94,.24);
+  text-shadow: none;
+}
+body.parrot-mode .companion-entry span,
+body.parrot-mode .achievements-entry span {
+  background: linear-gradient(135deg, #ecfeff, #dcfce7 58%, #fef3c7);
+  color: #065f46;
+  border: 1px solid rgba(20,184,166,.22);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.72), 0 6px 14px rgba(20,184,166,.12);
+  text-shadow: none;
+  font-weight: 900;
+}
+body.parrot-mode .achievements-entry span {
+  color: #9a3412;
+  background: linear-gradient(135deg, #fff7ed, #fef3c7 58%, #fee2e2);
+  border-color: rgba(249,115,22,.22);
+}
+body.parrot-mode .focus-actions .ghost,
+body.parrot-mode #focusStop,
+body.parrot-mode .ritual-actions button,
+body.parrot-mode .task-actions button {
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(240,253,250,.84));
+  color: #315225;
+  border-color: rgba(20,184,166,.20);
+  text-shadow: none;
+}
+body.parrot-mode #taskForm select,
+body.parrot-mode .edit-grid select,
+body.parrot-mode #taskForm input[type="date"],
+body.parrot-mode .edit-grid input[type="date"] {
+  background-color: #fffaf0;
+  background-blend-mode: normal;
+  color: #315225;
+  font-weight: 700;
+}
+body.parrot-mode #taskForm input[type="date"]::-webkit-datetime-edit,
+body.parrot-mode .edit-grid input[type="date"]::-webkit-datetime-edit {
+  color: #315225;
+}
+body.parrot-mode .today-stat,
+body.parrot-mode .progress-grid div,
+body.parrot-mode .today-mini,
+body.parrot-mode .task-card {
+  background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(236,253,245,.78) 50%, rgba(224,242,254,.70));
+  border-color: rgba(20,184,166,.18);
+}
+body.parrot-mode .today-mini:nth-child(3n + 1),
+body.parrot-mode .task-card:nth-child(3n + 1) {
+  background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,247,237,.84) 50%, rgba(254,243,199,.72));
+}
+body.parrot-mode .today-mini:nth-child(3n + 2),
+body.parrot-mode .task-card:nth-child(3n + 2) {
+  background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(240,253,244,.84) 50%, rgba(207,250,254,.70));
+}
+body.parrot-mode .today-mini:nth-child(3n + 3),
+body.parrot-mode .task-card:nth-child(3n + 3) {
+  background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(250,245,255,.84) 50%, rgba(252,231,243,.70));
+}
+body.parrot-mode .today-stat strong,
+body.parrot-mode .progress-grid strong {
+  color: #047857;
+  text-shadow: 0 1px 0 rgba(255,255,255,.55);
+}
+body.parrot-mode .today-stat:nth-child(2) strong,
+body.parrot-mode .progress-grid div:nth-child(2) strong { color: #c2410c; }
+body.parrot-mode .today-stat:nth-child(3) strong,
+body.parrot-mode .progress-grid div:nth-child(3) strong { color: #7c3aed; }
