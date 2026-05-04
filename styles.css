@@ -594,10 +594,7 @@ button, .file-label {
   transform: rotate(18deg);
   filter: drop-shadow(0 6px 8px rgba(0,0,0,.35));
 }
-.raven-perch[data-perch="twig"] .perch-stick::after,
-.raven-perch[data-perch="moon"] .perch-stick::after,
-.raven-perch[data-perch="crystal"] .perch-stick::after,
-.raven-perch[data-perch="fire"] .perch-stick::after {
+.raven-perch[data-perch="twig"] .perch-stick::after {
   content: '';
   position: absolute;
   left: 20px;
@@ -607,6 +604,11 @@ button, .file-label {
   border-bottom: 5px solid rgba(92,58,31,.95);
   border-radius: 50%;
   transform: rotate(-8deg);
+}
+.raven-perch[data-perch="moon"] .perch-stick::after,
+.raven-perch[data-perch="crystal"] .perch-stick::after,
+.raven-perch[data-perch="fire"] .perch-stick::after {
+  content: none;
 }
 .raven-perch[data-perch="swing"] .perch-stick {
   width: 122px;
