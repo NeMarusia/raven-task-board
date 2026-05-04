@@ -14,6 +14,7 @@
       <p class="subtitle">Канбан по направлениям + срочность/важность, чтобы рабочий хаос перестал кусаться.</p>
     </div>
     <div class="header-actions">
+      <button id="companionBtn" class="ghost companion-entry" type="button">🐦‍⬛ Фамильяр <span id="companionCount">0</span></button>
       <button id="achievementsBtn" class="ghost achievements-entry hidden" type="button">🏆 Полка <span id="achievementCount">0</span></button>
       <button id="exportBtn" class="ghost">Экспорт JSON</button>
       <button id="markdownBtn" class="ghost">Markdown для Obsidian</button>
@@ -79,6 +80,29 @@
     </main>
 
   <div id="achievementShelf" class="achievement-shelf" aria-live="polite"></div>
+
+  <dialog id="companionDialog" class="companion-dialog">
+    <section class="companion-card">
+      <div class="companion-head">
+        <div>
+          <p class="eyebrow">Bongo Raven</p>
+          <h2>Ворон-фамильяр</h2>
+          <p id="companionSummary" class="achievement-summary">Клац-клац собирается.</p>
+        </div>
+        <button id="companionClose" type="button" class="ghost">Закрыть</button>
+      </div>
+      <div class="companion-stage">
+        <div id="companionPreview" class="companion-preview" aria-hidden="true">🐦‍⬛</div>
+        <div class="companion-stats">
+          <div><strong id="companionKeys">0</strong><span>клавиш внутри доски</span></div>
+          <div><strong id="companionClicks">0</strong><span>кликов и действий</span></div>
+          <div><strong id="companionNextGift">—</strong><span>до следующей находки</span></div>
+        </div>
+      </div>
+      <h3>Гардероб и ветки</h3>
+      <div id="cosmeticGrid" class="cosmetic-grid"></div>
+    </section>
+  </dialog>
 
   <dialog id="achievementsDialog" class="achievements-dialog">
     <section class="achievements-card">

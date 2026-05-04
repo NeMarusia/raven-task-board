@@ -1,5 +1,6 @@
 const STORAGE_KEY = 'raven-task-board:v1';
 const ACHIEVEMENTS_KEY = 'raven-task-board:achievements:v1';
+const COMPANION_KEY = 'raven-task-board:companion:v1';
 
 const areas = [
   { id: 'work', title: 'Работа' },
@@ -24,9 +25,12 @@ let ravenMoodHoldUntil = 0;
 let ravenMoodTimer = null;
 let ravenMoodGuard = null;
 let ravenHeldMood = '';
+let companionState = loadCompanionState();
 
 const RAVEN_LINE_MIN_MS = 4200;
 const RAVEN_LINE_MAX_MS = 5600;
+const RAVEN_GIFT_COOLDOWN_MS = 60 * 60 * 1000;
+const RAVEN_GIFT_ACTIVITY = 80;
 
 const areaSelect = document.querySelector('#taskArea');
 const form = document.querySelector('#taskForm');
@@ -39,6 +43,10 @@ const achievementsBtn = document.querySelector('#achievementsBtn');
 const achievementsDialog = document.querySelector('#achievementsDialog');
 const achievementsClose = document.querySelector('#achievementsClose');
 const achievementCount = document.querySelector('#achievementCount');
+const companionBtn = document.querySelector('#companionBtn');
+const companionDialog = document.querySelector('#companionDialog');
+const companionClose = document.querySelector('#companionClose');
+const companionCount = document.querySelector('#companionCount');
 
 // HTML already contains fallback options so the select is never an empty Chrome goblin.
 areaSelect.innerHTML = '';
@@ -49,6 +57,151 @@ areas.forEach(area => {
   areaSelect.append(option);
   if (editArea) editArea.append(option.cloneNode(true));
 });
+
+const cosmeticCatalog = [
+  { id: 'hat-none', type: 'hat', icon: '—', title: 'Без шляпы', value: 'none', starter: true },
+  { id: 'hat-witch', type: 'hat', icon: '🧙‍♀️', title: 'Ведьмина шляпа', value: 'witch' },
+  { id: 'hat-crown', type: 'hat', icon: '👑', title: 'Корона хаоса', value: 'crown' },
+  { id: 'hat-party', type: 'hat', icon: '🥳', title: 'Колпак победы', value: 'party' },
+  { id: 'hat-cap', type: 'hat', icon: '🎩', title: 'Цилиндр джентльворона', value: 'cap' },
+  { id: 'perch-twig', type: 'perch', icon: '🌿', title: 'Обычная ветка', value: 'twig', starter: true },
+  { id: 'perch-moon', type: 'perch', icon: '🌙', title: 'Лунная жердочка', value: 'moon' },
+  { id: 'perch-crystal', type: 'perch', icon: '💎', title: 'Кристальная ветвь', value: 'crystal' },
+  { id: 'perch-fire', type: 'perch', icon: '🔥', title: 'Огненная ветка', value: 'fire' },
+  { id: 'aura-none', type: 'aura', icon: '—', title: 'Без ауры', value: 'none', starter: true },
+  { id: 'aura-stars', type: 'aura', icon: '✨', title: 'Звёздная пыль', value: 'stars' },
+  { id: 'aura-embers', type: 'aura', icon: '🟠', title: 'Тёплые искры', value: 'embers' },
+  { id: 'aura-ghost', type: 'aura', icon: '👻', title: 'Туман фамильяра', value: 'ghost' },
+];
+
+function loadCompanionState() {
+  const fallback = {
+    activity: 0,
+    totalKeys: 0,
+    totalClicks: 0,
+    lastRewardAt: 0,
+    inventory: ['hat-none', 'perch-twig', 'aura-none'],
+    equipped: { hat: 'none', perch: 'twig', aura: 'none' },
+  };
+  try {
+    const saved = JSON.parse(localStorage.getItem(COMPANION_KEY) || '{}');
+    return {
+      ...fallback,
+      ...saved,
+      inventory: Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])])),
+      equipped: { ...fallback.equipped, ...(saved.equipped || {}) },
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function saveCompanionState() {
+  localStorage.setItem(COMPANION_KEY, JSON.stringify(companionState));
+}
+
+function trackRavenActivity(kind = 'action', amount = 1) {
+  if (kind === 'key') companionState.totalKeys += amount;
+  else companionState.totalClicks += amount;
+  companionState.activity += amount;
+  saveCompanionState();
+  renderCompanion();
+  maybeGiveRavenGift();
+}
+
+function maybeGiveRavenGift() {
+  const now = Date.now();
+  if (companionState.activity < RAVEN_GIFT_ACTIVITY) return;
+  if (companionState.lastRewardAt && now - companionState.lastRewardAt < RAVEN_GIFT_COOLDOWN_MS) return;
+  const locked = cosmeticCatalog.filter(item => !companionState.inventory.includes(item.id));
+  if (!locked.length) return;
+  const gift = locked[Math.floor(Math.random() * locked.length)];
+  companionState.inventory.push(gift.id);
+  companionState.activity = 0;
+  companionState.lastRewardAt = now;
+  companionState.equipped[gift.type] = gift.value;
+  saveCompanionState();
+  applyCompanionCosmetics();
+  renderCompanion();
+  showCompanionGift(gift);
+}
+
+function showCompanionGift(gift) {
+  holdRavenMood(`Нашёл обновку: ${gift.title}. Кар-р-ьерная доставка!`, 5600);
+  showAchievement({ icon: gift.icon, title: 'Воронья находка', text: gift.title });
+}
+
+function applyCompanionCosmetics() {
+  const perch = document.querySelector('.raven-perch');
+  const preview = document.querySelector('#companionPreview');
+  const target = companionState.equipped || {};
+  if (perch) {
+    perch.dataset.hat = target.hat || 'none';
+    perch.dataset.perch = target.perch || 'twig';
+    perch.dataset.aura = target.aura || 'none';
+  }
+  if (preview) {
+    preview.dataset.hat = target.hat || 'none';
+    preview.dataset.perch = target.perch || 'twig';
+    preview.dataset.aura = target.aura || 'none';
+  }
+}
+
+function renderCompanion() {
+  applyCompanionCosmetics();
+  if (companionCount) companionCount.textContent = String(companionState.activity);
+  const keys = document.querySelector('#companionKeys');
+  const clicks = document.querySelector('#companionClicks');
+  const next = document.querySelector('#companionNextGift');
+  const summary = document.querySelector('#companionSummary');
+  if (keys) keys.textContent = String(companionState.totalKeys);
+  if (clicks) clicks.textContent = String(companionState.totalClicks);
+  const remainingActivity = Math.max(0, RAVEN_GIFT_ACTIVITY - companionState.activity);
+  const remainingCooldown = companionState.lastRewardAt ? Math.max(0, RAVEN_GIFT_COOLDOWN_MS - (Date.now() - companionState.lastRewardAt)) : 0;
+  if (next) next.textContent = remainingCooldown ? formatDuration(remainingCooldown) : `${remainingActivity} клац`;
+  if (summary) summary.textContent = `Внутри доски собрано ${companionState.activity} свежих клац-клац. Находки падают не чаще раза в час.`;
+  renderCosmeticGrid();
+}
+
+function renderCosmeticGrid() {
+  const grid = document.querySelector('#cosmeticGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  cosmeticCatalog.forEach(item => {
+    const owned = companionState.inventory.includes(item.id);
+    const equipped = companionState.equipped?.[item.type] === item.value;
+    const node = document.createElement('button');
+    node.type = 'button';
+    node.className = `cosmetic-card${owned ? '' : ' locked'}${equipped ? ' equipped' : ''}`;
+    node.innerHTML = `<strong>${escapeHtml(item.icon)} ${escapeHtml(item.title)}</strong><span>${owned ? (equipped ? 'надето' : 'примерить') : 'ещё не найдено'}</span>`;
+    node.disabled = !owned;
+    node.addEventListener('click', () => {
+      companionState.equipped[item.type] = item.value;
+      saveCompanionState();
+      renderCompanion();
+      holdRavenMood(`Так, образ обновлён: ${item.title}. Ворон доволен собой.`, 4600);
+    });
+    grid.append(node);
+  });
+}
+
+function formatDuration(ms) {
+  const minutes = Math.ceil(ms / 60000);
+  if (minutes <= 1) return '<1 мин';
+  return `${minutes} мин`;
+}
+
+document.addEventListener('keydown', event => {
+  if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+  trackRavenActivity('key', 1);
+  document.querySelector('.raven-perch')?.classList.add('typing');
+  clearTimeout(document.body._ravenTypingTimer);
+  document.body._ravenTypingTimer = setTimeout(() => document.querySelector('.raven-perch')?.classList.remove('typing'), 260);
+});
+
+document.addEventListener('click', event => {
+  if (event.target.closest('button, input, select, textarea, label, .task-card')) trackRavenActivity('click', 1);
+}, { capture: true });
 
 form.addEventListener('submit', event => {
   event.preventDefault();
@@ -64,6 +217,7 @@ form.addEventListener('submit', event => {
   };
   if (task.due) unlockAchievement('deadline-sigil');
   if (task.note) unlockAchievement('footnote-familiar');
+  trackRavenActivity('click', 8);
   state.tasks.unshift(task);
   const created = bumpAchievementCounter('tasksCreated');
   if (created >= 3) unlockAchievement('nest-builder');
@@ -104,6 +258,12 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 
+
+companionBtn?.addEventListener('click', () => {
+  renderCompanion();
+  companionDialog?.showModal();
+});
+companionClose?.addEventListener('click', () => companionDialog?.close());
 
 achievementsBtn?.addEventListener('click', () => {
   renderAchievementTree();
@@ -451,6 +611,7 @@ async function init() {
   checkBoardAchievements();
   renderAchievementEntry();
   renderAchievementTree();
+  renderCompanion();
 }
 
 
@@ -471,6 +632,7 @@ function render() {
   renderDone();
   updateRavenMood();
   renderAchievementEntry();
+  renderCompanion();
 }
 
 
@@ -661,7 +823,10 @@ function setTaskDone(task, done, card) {
     delete task.doneAt;
     if (wasDone) unlockAchievement('second-thought');
   }
-  if (done && !wasDone) celebrateTask(card);
+  if (done && !wasDone) {
+    trackRavenActivity('click', 10);
+    celebrateTask(card);
+  }
   checkBoardAchievements();
   saveAndRender();
 }
@@ -712,6 +877,7 @@ function wireDropzone(zone, applyChange) {
     const oldArea = task.area;
     const oldQuadrant = task.quadrant;
     applyChange(task);
+    trackRavenActivity('click', 5);
     if (task.area !== oldArea) unlockAchievement('migration-raven');
     if (task.quadrant !== oldQuadrant) unlockAchievement('priority-alchemy');
     saveAndRender();
