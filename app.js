@@ -51,6 +51,7 @@ const companionBtn = document.querySelector('#companionBtn');
 const companionDialog = document.querySelector('#companionDialog');
 const companionClose = document.querySelector('#companionClose');
 const companionCount = document.querySelector('#companionCount');
+const personalitySelect = document.querySelector('#personalitySelect');
 const themeBtn = document.querySelector('#themeBtn');
 const focusStart = document.querySelector('#focusStart');
 const focusStop = document.querySelector('#focusStop');
@@ -85,6 +86,15 @@ const cosmeticCatalog = [
   { id: 'aura-ghost', type: 'aura', icon: '👻', title: 'Туман фамильяра', value: 'ghost' },
   { id: 'aura-rainbow', type: 'aura', icon: '🌈', title: 'Радужный шум', value: 'rainbow' },
   { id: 'aura-coffee', type: 'aura', icon: '☕', title: 'Кофейная концентрация', value: 'coffee' },
+  { id: 'wallpaper-none', type: 'wallpaper', icon: '—', title: 'Без обоев', value: 'none', starter: true },
+  { id: 'wallpaper-palms', type: 'wallpaper', icon: '🌴', title: 'Пальмы и море', value: 'palms' },
+  { id: 'wallpaper-stars', type: 'wallpaper', icon: '🌌', title: 'Созвездия', value: 'stars' },
+  { id: 'wallpaper-mountains', type: 'wallpaper', icon: '⛰️', title: 'Горы на рассвете', value: 'mountains' },
+  { id: 'wallpaper-surf', type: 'wallpaper', icon: '🌊', title: 'Прибой', value: 'surf' },
+  { id: 'wallpaper-moon', type: 'wallpaper', icon: '🌕', title: 'Яркая луна', value: 'moon' },
+  { id: 'wallpaper-forest', type: 'wallpaper', icon: '🌲', title: 'Туманный лес', value: 'forest' },
+  { id: 'wallpaper-library', type: 'wallpaper', icon: '📚', title: 'Магическая библиотека', value: 'library' },
+  { id: 'wallpaper-aurora', type: 'wallpaper', icon: '🌠', title: 'Северное сияние', value: 'aurora' },
 ];
 
 function loadCompanionState() {
@@ -93,8 +103,8 @@ function loadCompanionState() {
     totalKeys: 0,
     totalClicks: 0,
     lastRewardAt: 0,
-    inventory: ['hat-none', 'perch-twig', 'aura-none'],
-    equipped: { hat: 'none', perch: 'twig', aura: 'none' },
+    inventory: ['hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
+    equipped: { hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem(COMPANION_KEY) || '{}');
@@ -148,6 +158,7 @@ function applyCompanionCosmetics() {
   const perch = document.querySelector('.raven-perch');
   const preview = document.querySelector('#companionPreview');
   const target = companionState.equipped || {};
+  document.body.dataset.wallpaper = target.wallpaper || 'none';
   if (perch) {
     perch.dataset.hat = target.hat || 'none';
     perch.dataset.perch = target.perch || 'twig';
@@ -173,8 +184,46 @@ function renderCompanion() {
   const remainingCooldown = companionState.lastRewardAt ? Math.max(0, RAVEN_GIFT_COOLDOWN_MS - (Date.now() - companionState.lastRewardAt)) : 0;
   if (next) next.textContent = remainingCooldown ? formatDuration(remainingCooldown) : `${remainingActivity} клац`;
   if (summary) summary.textContent = `Внутри доски собрано ${companionState.activity} свежих клац-клац. Находки падают не чаще раза в час.`;
+  renderPersonalityPicker();
   renderCosmeticGrid();
 }
+
+const personalityCatalog = {
+  familiar: { title: 'Фамильяр-технарь', lines: ['Кар. Я наблюдаю.', 'Я всё записал. Не благодари, просто не теряй список.', 'Если задача шипит — значит, её пора приручать.'] },
+  soft: { title: 'Мягкий коуч', lines: ['Давай спокойно. Одна задача — уже движение.', 'Я рядом на ветке. Выбирай маленький шаг.', 'Хаос не победит, если его разложить по карточкам.'] },
+  sarcastic: { title: 'Саркастичный ворон', lines: ['О, задача. Какая редкая птица в таск-трекере.', 'Прокрастинация красиво лежит, но мы её всё равно пнём.', 'Карточка смотрит. Ты смотришь. Драма века.'] },
+  pm: { title: 'Злой PM', lines: ['Статус? Риски? Дедлайн? Кар.', 'Фокусируемся. Никаких героических болот без плана.', 'Эту задачу надо закрыть, а не романтизировать.'] },
+  gothic: { title: 'Готичный фамильяр', lines: ['Ночь глубока, но список глубже.', 'Перо упало. Дедлайн услышал.', 'Пускай задачи шепчут — мы шепчем громче.'] },
+  parrot: { title: 'Солнечный попугай', lines: ['Крррасиво! Давай одну яркую задачку!', 'Пальмы ждут, но сначала чекбокс.', 'Чик-чирик продуктивности, погнали!'] },
+};
+
+function currentPersonality() {
+  return personalityCatalog[companionState.personality || 'familiar'] || personalityCatalog.familiar;
+}
+
+function ravenSay(kind = 'random') {
+  const lines = currentPersonality().lines;
+  return lines[Math.floor(Math.random() * lines.length)];
+}
+
+function renderPersonalityPicker() {
+  if (!personalitySelect) return;
+  if (!personalitySelect.options.length) {
+    Object.entries(personalityCatalog).forEach(([id, item]) => {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = item.title;
+      personalitySelect.append(option);
+    });
+  }
+  personalitySelect.value = companionState.personality || 'familiar';
+}
+
+personalitySelect?.addEventListener('change', () => {
+  companionState.personality = personalitySelect.value;
+  saveCompanionState();
+  holdRavenMood(ravenSay(), 5200);
+});
 
 function renderCosmeticGrid() {
   const grid = document.querySelector('#cosmeticGrid');
@@ -190,6 +239,7 @@ function renderCosmeticGrid() {
     node.disabled = !owned;
     node.addEventListener('click', () => {
       companionState.equipped[item.type] = item.value;
+      if (item.type === 'wallpaper' && item.value !== 'none') unlockAchievement('wallpaper-hunter');
       saveCompanionState();
       renderCompanion();
       holdRavenMood(`Так, образ обновлён: ${item.title}. Ворон доволен собой.`, 4600);
@@ -458,6 +508,7 @@ const achievementCatalog = [
   { id: 'deep-perch', icon: '🪵', title: 'Глубокая жердочка', text: 'Фокус уже становится привычкой.' },
   { id: 'ritual-circle', icon: '🕯️', title: 'Ритуальный круг', text: 'Доска стала не списком, а маленьким обрядом.' },
   { id: 'sunny-parrot', icon: '🦜', title: 'Солнечный фамильяр', text: 'Иногда даже ворону нужен отпуск в тропиках.' },
+  { id: 'wallpaper-hunter', icon: '🖼️', title: 'Коллекционер обоев', text: 'У доски появился вид из окна.' },
 ];
 
 function loadAchievementState() {
@@ -583,7 +634,7 @@ document.querySelector('#perchRaven')?.addEventListener('click', () => {
   const pokes = bumpAchievementCounter('ravenPokes');
   unlockAchievement('poke-the-bird');
   if (pokes >= 7) unlockAchievement('bird-friend');
-  holdRavenMood(ravenLines[Math.floor(Math.random() * ravenLines.length)]);
+  holdRavenMood(ravenSay());
   setTimeout(() => {
     perch.classList.remove(action);
   }, 900);

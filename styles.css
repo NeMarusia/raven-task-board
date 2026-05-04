@@ -831,3 +831,79 @@ body.parrot-mode .perch-bubble { background: rgba(255,250,240,.86); }
 @media (max-width: 980px) {
   .productivity-panel { grid-template-columns: 1fr; }
 }
+
+.personality-picker {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.personality-picker select { width: min(360px, 100%); }
+.focus-clock {
+  background: linear-gradient(135deg, rgba(167,139,250,.95), rgba(249,115,22,.55));
+  color: #fffaf7;
+  text-shadow: 0 3px 10px rgba(0,0,0,.28);
+  box-shadow: 0 16px 34px rgba(167,139,250,.24), inset 0 0 24px rgba(255,255,255,.18);
+}
+body.parrot-mode .focus-clock {
+  background: linear-gradient(135deg, #22c55e, #06b6d4 55%, #f59e0b);
+  color: white;
+  box-shadow: 0 16px 34px rgba(34,197,94,.24), inset 0 0 24px rgba(255,255,255,.24);
+}
+body[data-wallpaper="palms"] {
+  background:
+    radial-gradient(circle at 15% 18%, rgba(34,197,94,.28), transparent 22%),
+    radial-gradient(circle at 80% 78%, rgba(14,165,233,.28), transparent 30%),
+    linear-gradient(160deg, rgba(255,247,237,.96), rgba(125,211,252,.78));
+}
+body[data-wallpaper="stars"] {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 30%, rgba(255,255,255,.75) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 72%, rgba(167,139,250,.32), transparent 28%),
+    linear-gradient(145deg, #080719, #17112f 55%, #05040b);
+}
+body[data-wallpaper="mountains"] {
+  background:
+    linear-gradient(135deg, transparent 55%, rgba(15,23,42,.5) 56%),
+    linear-gradient(45deg, transparent 58%, rgba(71,85,105,.62) 59%),
+    linear-gradient(180deg, #fde68a 0%, #bfdbfe 42%, #1e293b 100%);
+}
+body[data-wallpaper="surf"] {
+  background:
+    radial-gradient(ellipse at 50% 110%, rgba(255,255,255,.9) 0 12%, transparent 13%),
+    repeating-linear-gradient(170deg, rgba(255,255,255,.26) 0 12px, transparent 12px 28px),
+    linear-gradient(180deg, #0ea5e9, #0369a1 60%, #082f49);
+}
+body[data-wallpaper="moon"] {
+  background:
+    radial-gradient(circle at 78% 16%, #fff7cc 0 48px, rgba(255,247,204,.35) 49px 86px, transparent 87px),
+    radial-gradient(circle at 20% 80%, rgba(167,139,250,.22), transparent 28%),
+    linear-gradient(160deg, #0f1028, #12101a 60%, #05040a);
+}
+body[data-wallpaper="forest"] {
+  background:
+    repeating-linear-gradient(90deg, rgba(20,83,45,.42) 0 16px, transparent 16px 44px),
+    radial-gradient(circle at 50% 0%, rgba(187,247,208,.2), transparent 36%),
+    linear-gradient(180deg, #052e16, #111827);
+}
+body[data-wallpaper="library"] {
+  background:
+    repeating-linear-gradient(90deg, rgba(120,53,15,.4) 0 28px, rgba(69,26,3,.4) 28px 34px, transparent 34px 46px),
+    radial-gradient(circle at 80% 10%, rgba(251,191,36,.22), transparent 28%),
+    linear-gradient(160deg, #2b170d, #111018);
+}
+body[data-wallpaper="aurora"] {
+  background:
+    radial-gradient(ellipse at 40% 0%, rgba(34,197,94,.42), transparent 38%),
+    radial-gradient(ellipse at 70% 10%, rgba(59,130,246,.38), transparent 34%),
+    radial-gradient(ellipse at 20% 20%, rgba(236,72,153,.24), transparent 30%),
+    linear-gradient(180deg, #020617, #111827);
+}
+body[data-wallpaper]:not([data-wallpaper="none"]) .card,
+body[data-wallpaper]:not([data-wallpaper="none"]) .column,
+body[data-wallpaper]:not([data-wallpaper="none"]) .matrix-cell,
+body[data-wallpaper]:not([data-wallpaper="none"]) .list-view {
+  backdrop-filter: blur(14px);
+}
