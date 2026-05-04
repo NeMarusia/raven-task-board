@@ -1,0 +1,31 @@
+http:
+  routers:
+    raven-task-board:
+      rule: "Host(`tasks.marsillia.online`)"
+      entryPoints: [websecure]
+      service: raven-task-board
+      middlewares: [raven-basic-auth]
+      tls:
+        certResolver: cloudflare
+
+    raven-task-board-http:
+      rule: "Host(`tasks.marsillia.online`)"
+      entryPoints: [web]
+      service: raven-task-board
+      middlewares: [raven-redirect-to-https]
+
+  middlewares:
+    raven-redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    raven-basic-auth:
+      basicAuth:
+        usersFile: /etc/traefik/dynamic/users.htpasswd
+
+  services:
+    raven-task-board:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8099"
