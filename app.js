@@ -396,19 +396,11 @@ function taskCard(task, options = {}) {
   });
 
   const editBtn = card.querySelector('.edit');
-  const doneBtn = card.querySelector('.done');
   const restoreBtn = card.querySelector('.restore');
   editBtn.classList.toggle('hidden', Boolean(task.done));
   editBtn.addEventListener('click', () => openEditDialog(task));
-  doneBtn.classList.toggle('hidden', Boolean(task.done));
   restoreBtn.classList.toggle('hidden', !task.done);
-  doneBtn.addEventListener('click', () => setTaskDone(task, true, card));
   restoreBtn.addEventListener('click', () => setTaskDone(task, false, card));
-  card.querySelector('.delete').addEventListener('click', () => {
-    state.tasks = state.tasks.filter(item => item.id !== task.id);
-    saveAndRender();
-  });
-  card.querySelector('.move').addEventListener('click', () => quickMove(task));
   return card;
 }
 
@@ -430,14 +422,6 @@ function setTaskDone(task, done, card) {
   if (done && !task.doneAt) task.doneAt = new Date().toISOString();
   if (!done) delete task.doneAt;
   if (done && !wasDone) celebrateTask(card);
-  saveAndRender();
-}
-
-function quickMove(task) {
-  const nextArea = prompt(`Направление: ${areas.map(a => a.id + '=' + a.title).join(', ')}`, task.area);
-  if (nextArea && areas.some(a => a.id === nextArea)) task.area = nextArea;
-  const nextQuadrant = prompt(`Квадрант: ${Object.keys(quadrants).join(', ')}`, task.quadrant);
-  if (nextQuadrant && quadrants[nextQuadrant]) task.quadrant = nextQuadrant;
   saveAndRender();
 }
 

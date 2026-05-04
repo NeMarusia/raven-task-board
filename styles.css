@@ -94,8 +94,6 @@ button, .file-label {
 .note { color: var(--muted); font-size: 13px; line-height: 1.45; white-space: pre-wrap; }
 .task-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 .task-actions button { padding: 8px 9px; font-size: 12px; background: rgba(255,255,255,.08); color: var(--text); border: 1px solid var(--line); }
-.task-actions .done { color: #bbf7d0; border-color: rgba(52,211,153,.35); }
-.task-actions .delete { color: #fecdd3; border-color: rgba(251,113,133,.35); }
 .matrix-view { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 14px; }
 .matrix-cell { padding: 14px; min-height: 300px; }
 .matrix-cell[data-quadrant="urgent-important"] { outline: 1px solid rgba(251,113,133,.35); }
