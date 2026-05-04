@@ -267,6 +267,13 @@ function taskCard(task) {
   const card = template.content.firstElementChild.cloneNode(true);
   card.dataset.id = task.id;
   card.querySelector('h3').textContent = task.title;
+  card.classList.toggle('done-card', Boolean(task.done));
+  const complete = card.querySelector('.complete');
+  complete.checked = Boolean(task.done);
+  complete.addEventListener('change', () => {
+    task.done = complete.checked;
+    saveAndRender();
+  });
   card.querySelector('.area').textContent = `${areaName(task.area)} · ${quadrants[task.quadrant]}`;
   card.querySelector('.due').textContent = task.due ? formatDate(task.due) : '';
   const note = card.querySelector('.note');
