@@ -26,6 +26,22 @@ node server.js
 `/home/sunrise/Obsidian/данные о владельце/работа/Воронья доска задач.md`
 
 
+
+
+## Скриншоты
+
+### Канбан
+
+![Канбан](docs/screenshots/kanban.png)
+
+### Матрица срочности и важности
+
+![Матрица срочности и важности](docs/screenshots/matrix.png)
+
+### Пустое состояние
+
+![Пустое состояние](docs/screenshots/list-empty.png)
+
 ## Стек
 
 - Frontend: vanilla HTML, CSS, JavaScript.
