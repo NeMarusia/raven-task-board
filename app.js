@@ -16,11 +16,16 @@ const quadrants = {
 
 let state = { tasks: [] };
 let draggedId = null;
+let activeFilter = 'all';
+let editingTaskId = null;
 
 const areaSelect = document.querySelector('#taskArea');
 const form = document.querySelector('#taskForm');
 const noteInput = document.querySelector('#taskNote');
 const searchInput = document.querySelector('#search');
+const editDialog = document.querySelector('#editDialog');
+const editForm = document.querySelector('#editForm');
+const editArea = document.querySelector('#editArea');
 
 // HTML already contains fallback options so the select is never an empty Chrome goblin.
 areaSelect.innerHTML = '';
@@ -29,6 +34,7 @@ areas.forEach(area => {
   option.value = area.id;
   option.textContent = area.title;
   areaSelect.append(option);
+  if (editArea) editArea.append(option.cloneNode(true));
 });
 
 form.addEventListener('submit', event => {
@@ -51,6 +57,15 @@ form.addEventListener('submit', event => {
 
 searchInput.addEventListener('input', render);
 
+document.querySelectorAll('.filter').forEach(button => {
+  button.addEventListener('click', () => {
+    activeFilter = button.dataset.filter;
+    document.querySelectorAll('.filter').forEach(item => item.classList.remove('active'));
+    button.classList.add('active');
+    render();
+  });
+});
+
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -59,6 +74,24 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelector(`#${tab.dataset.view}View`).classList.remove('hidden');
     render();
   });
+});
+
+
+
+document.querySelector('#editClose')?.addEventListener('click', () => editDialog.close());
+document.querySelector('#editCancel')?.addEventListener('click', () => editDialog.close());
+editForm?.addEventListener('submit', event => {
+  event.preventDefault();
+  const task = state.tasks.find(item => item.id === editingTaskId);
+  if (!task) return;
+  task.title = document.querySelector('#editTitle').value.trim();
+  task.area = document.querySelector('#editArea').value;
+  task.quadrant = document.querySelector('#editQuadrant').value;
+  task.due = document.querySelector('#editDue').value;
+  task.note = document.querySelector('#editNote').value.trim();
+  task.updatedAt = new Date().toISOString();
+  editDialog.close();
+  saveAndRender();
 });
 
 document.querySelector('#resetBtn').addEventListener('click', () => {
@@ -220,12 +253,14 @@ async function init() {
 function filteredTasks() {
   const query = searchInput.value.trim().toLowerCase();
   return state.tasks.filter(task => !task.done).filter(task => {
+    if (!matchesDateFilter(task)) return false;
     if (!query) return true;
     return [task.title, task.note, areaName(task.area), quadrants[task.quadrant]].join(' ').toLowerCase().includes(query);
   });
 }
 
 function render() {
+  renderTodayPanel();
   renderKanban();
   renderMatrix();
   renderList();
@@ -233,6 +268,39 @@ function render() {
   updateRavenMood();
 }
 
+
+
+function renderTodayPanel() {
+  const root = document.querySelector('#todayPanel');
+  if (!root) return;
+  const active = state.tasks.filter(task => !task.done);
+  const today = active.filter(isTodayTask);
+  const overdue = active.filter(isOverdueTask);
+  const week = active.filter(isThisWeekTask);
+  const hot = active.filter(task => task.quadrant === 'urgent-important');
+  const focus = [...new Map([...overdue, ...today, ...hot].map(task => [task.id, task])).values()].slice(0, 6);
+  root.innerHTML = `
+    <h2>🔥 Сегодня <span class="count">фокус дня</span></h2>
+    <div class="today-grid">
+      <div class="today-stat"><strong>${today.length}</strong><span>на сегодня</span></div>
+      <div class="today-stat"><strong>${overdue.length}</strong><span>просрочено</span></div>
+      <div class="today-stat"><strong>${week.length}</strong><span>на 7 дней</span></div>
+    </div>
+    <div class="today-strip"></div>
+  `;
+  const strip = root.querySelector('.today-strip');
+  if (!focus.length) {
+    strip.append(empty('На сегодня явного пожара нет. Подозрительно, но приятно.'));
+    return;
+  }
+  focus.forEach(task => {
+    const node = document.createElement('div');
+    node.className = 'today-mini';
+    const due = task.due ? ` · ${formatDate(task.due)}` : '';
+    node.innerHTML = `<strong>${escapeHtml(task.title)}</strong><span>${escapeHtml(areaName(task.area))} · ${escapeHtml(quadrants[task.quadrant])}${due}</span>`;
+    strip.append(node);
+  });
+}
 
 function updateRavenMood() {
   const mood = document.querySelector('#ravenMood');
@@ -327,8 +395,11 @@ function taskCard(task, options = {}) {
     card.classList.remove('dragging');
   });
 
+  const editBtn = card.querySelector('.edit');
   const doneBtn = card.querySelector('.done');
   const restoreBtn = card.querySelector('.restore');
+  editBtn.classList.toggle('hidden', Boolean(task.done));
+  editBtn.addEventListener('click', () => openEditDialog(task));
   doneBtn.classList.toggle('hidden', Boolean(task.done));
   restoreBtn.classList.toggle('hidden', !task.done);
   doneBtn.addEventListener('click', () => setTaskDone(task, true, card));
@@ -341,6 +412,17 @@ function taskCard(task, options = {}) {
   return card;
 }
 
+
+
+function openEditDialog(task) {
+  editingTaskId = task.id;
+  document.querySelector('#editTitle').value = task.title || '';
+  document.querySelector('#editArea').value = task.area || 'work';
+  document.querySelector('#editQuadrant').value = task.quadrant || 'not-urgent-important';
+  document.querySelector('#editDue').value = task.due || '';
+  document.querySelector('#editNote').value = task.note || '';
+  editDialog.showModal();
+}
 
 function setTaskDone(task, done, card) {
   const wasDone = Boolean(task.done);
@@ -414,6 +496,45 @@ function empty(text) {
   node.className = 'empty';
   node.textContent = text;
   return node;
+}
+
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function dateOnly(value) {
+  return value ? new Date(value + 'T00:00:00') : null;
+}
+
+function isTodayTask(task) {
+  return task.due === todayKey();
+}
+
+function isOverdueTask(task) {
+  return Boolean(task.due && task.due < todayKey());
+}
+
+function isThisWeekTask(task) {
+  if (!task.due) return false;
+  const due = dateOnly(task.due);
+  const start = dateOnly(todayKey());
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7);
+  return due >= start && due <= end;
+}
+
+function matchesDateFilter(task) {
+  if (activeFilter === 'today') return isTodayTask(task);
+  if (activeFilter === 'overdue') return isOverdueTask(task);
+  if (activeFilter === 'week') return isThisWeekTask(task);
+  return true;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = String(text ?? '');
+  return div.innerHTML;
 }
 
 function areaName(id) {

@@ -53,12 +53,20 @@
       <textarea id="taskNote" placeholder="Комментарий / кто ждёт / где искать контекст"></textarea>
     </section>
 
+    <section id="todayPanel" class="today-panel card"></section>
+
     <section class="toolbar">
       <div class="tabs" role="tablist">
         <button class="tab active" data-view="kanban">Канбан</button>
         <button class="tab" data-view="matrix">Срочно / важно</button>
         <button class="tab" data-view="list">Список</button>
         <button class="tab" data-view="done">Закрытые</button>
+      </div>
+      <div class="filters" aria-label="Фильтры задач">
+        <button class="filter active" data-filter="all">Все</button>
+        <button class="filter" data-filter="today">Сегодня</button>
+        <button class="filter" data-filter="overdue">Просрочено</button>
+        <button class="filter" data-filter="week">Неделя</button>
       </div>
       <input id="search" placeholder="Поиск по задачам" />
     </section>
@@ -68,6 +76,35 @@
     <section id="listView" class="view list-view hidden"></section>
     <section id="doneView" class="view list-view hidden"></section>
   </main>
+
+
+  <dialog id="editDialog" class="edit-dialog">
+    <form id="editForm" method="dialog" class="edit-card">
+      <div class="edit-head">
+        <div>
+          <p class="eyebrow">Edit task</p>
+          <h2>Правка задачи</h2>
+        </div>
+        <button id="editClose" type="button" class="ghost">Закрыть</button>
+      </div>
+      <input id="editTitle" required maxlength="160" placeholder="Название задачи" />
+      <div class="edit-grid">
+        <select id="editArea" required></select>
+        <select id="editQuadrant" required>
+          <option value="urgent-important">🔥 Срочно + важно</option>
+          <option value="not-urgent-important">🌱 Не срочно + важно</option>
+          <option value="urgent-not-important">⚡ Срочно + неважно</option>
+          <option value="not-urgent-not-important">🪶 Не срочно + неважно</option>
+        </select>
+        <input id="editDue" type="date" />
+      </div>
+      <textarea id="editNote" placeholder="Комментарий / контекст"></textarea>
+      <div class="edit-actions">
+        <button type="submit">Сохранить</button>
+        <button id="editCancel" type="button" class="ghost">Отмена</button>
+      </div>
+    </form>
+  </dialog>
 
   <template id="taskTemplate">
     <article class="task-card" draggable="true">
@@ -82,6 +119,7 @@
       </label>
       <p class="note"></p>
       <div class="task-actions">
+        <button class="edit">Править</button>
         <button class="move">Перенести</button>
         <button class="done">Готово</button>
         <button class="restore hidden">Вернуть</button>
