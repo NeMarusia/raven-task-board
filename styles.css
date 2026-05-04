@@ -907,3 +907,86 @@ body[data-wallpaper]:not([data-wallpaper="none"]) .matrix-cell,
 body[data-wallpaper]:not([data-wallpaper="none"]) .list-view {
   backdrop-filter: blur(14px);
 }
+
+/* Light/parrot mode contrast pass: cute, but no disappearing ink. */
+body.parrot-mode {
+  --text: #24180c;
+  --muted: #5f482f;
+  --accent: #16a34a;
+  --accent-2: #0284c7;
+  --ok: #15803d;
+  --line: rgba(92,64,36,.28);
+}
+body.parrot-mode .tab,
+body.parrot-mode .filter,
+body.parrot-mode .ghost,
+body.parrot-mode .task-actions button {
+  background: rgba(255,255,255,.72);
+  color: #4a351f;
+  border-color: rgba(92,64,36,.24);
+  box-shadow: 0 8px 18px rgba(92,64,36,.08);
+}
+body.parrot-mode .tab.active {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  border-color: rgba(21,128,61,.55);
+  box-shadow: 0 10px 22px rgba(34,197,94,.28);
+}
+body.parrot-mode .filter.active {
+  background: linear-gradient(135deg, #67e8f9, #22c55e);
+  color: #06351d;
+  border-color: rgba(14,116,144,.42);
+  box-shadow: 0 10px 22px rgba(14,165,233,.22);
+}
+body.parrot-mode .task-card {
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,250,240,.86));
+  border-color: rgba(92,64,36,.24);
+  box-shadow: 0 12px 28px rgba(92,64,36,.12);
+}
+body.parrot-mode .task-card h3 { color: #24180c; }
+body.parrot-mode .note,
+body.parrot-mode .due { color: #6b4f34; }
+body.parrot-mode .pill {
+  background: linear-gradient(135deg, rgba(34,197,94,.24), rgba(14,165,233,.18));
+  color: #14532d;
+  border: 1px solid rgba(22,163,74,.24);
+  font-weight: 800;
+}
+body.parrot-mode .task-card:nth-child(3n + 1) .pill {
+  background: linear-gradient(135deg, rgba(249,115,22,.22), rgba(251,191,36,.22));
+  color: #7c2d12;
+  border-color: rgba(249,115,22,.22);
+}
+body.parrot-mode .task-card:nth-child(3n + 2) .pill {
+  background: linear-gradient(135deg, rgba(167,139,250,.24), rgba(236,72,153,.16));
+  color: #581c87;
+  border-color: rgba(147,51,234,.18);
+}
+body.parrot-mode input,
+body.parrot-mode select,
+body.parrot-mode textarea {
+  color: #24180c;
+  border-color: rgba(92,64,36,.24);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.4);
+}
+body.parrot-mode input::placeholder,
+body.parrot-mode textarea::placeholder { color: rgba(95,72,47,.72); }
+body.parrot-mode .card,
+body.parrot-mode .column,
+body.parrot-mode .matrix-cell,
+body.parrot-mode .list-view,
+body.parrot-mode .today-panel,
+body.parrot-mode .productivity-panel {
+  border-color: rgba(92,64,36,.22);
+}
+body.parrot-mode .empty {
+  color: #6b4f34;
+  border-color: rgba(92,64,36,.26);
+  background: rgba(255,255,255,.42);
+}
+body.parrot-mode .perch-bubble {
+  color: #5f482f;
+  border-color: rgba(92,64,36,.22);
+  box-shadow: 0 14px 32px rgba(92,64,36,.14);
+}
+body.parrot-mode .perch-bubble strong { color: #24180c; }
