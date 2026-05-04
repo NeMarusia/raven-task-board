@@ -229,6 +229,18 @@ function render() {
   renderKanban();
   renderMatrix();
   renderList();
+  updateRavenMood();
+}
+
+
+function updateRavenMood() {
+  const mood = document.querySelector('#ravenMood');
+  if (!mood) return;
+  const active = state.tasks.filter(task => !task.done).length;
+  const hot = state.tasks.filter(task => !task.done && task.quadrant === 'urgent-important').length;
+  if (!active) mood.textContent = 'Пусто. Подозрительно, но прекрасно.';
+  else if (hot) mood.textContent = `На посту: ${hot} горит, ${active} всего.`;
+  else mood.textContent = `Задачи текут спокойно: ${active} всего.`;
 }
 
 function renderKanban() {
@@ -333,11 +345,24 @@ function celebrateTask(card) {
   document.body.append(raven);
   raven.addEventListener('animationend', () => raven.remove(), { once: true });
 
-  for (let i = 0; i < 18; i += 1) {
+  const perch = document.querySelector('.raven-perch');
+  const mood = document.querySelector('#ravenMood');
+  if (perch) {
+    perch.classList.remove('celebrate');
+    void perch.offsetWidth;
+    perch.classList.add('celebrate');
+  }
+  if (mood) {
+    const oldMood = mood.textContent;
+    mood.textContent = 'Задача закрыта. Кар-р-расивая работа.';
+    setTimeout(() => { mood.textContent = oldMood || 'Смотрю, как задачи текут.'; }, 2200);
+  }
+
+  for (let i = 0; i < 28; i += 1) {
     const spark = document.createElement('span');
     spark.className = 'spark';
-    const angle = (Math.PI * 2 * i) / 18;
-    const distance = 42 + Math.random() * 58;
+    const angle = (Math.PI * 2 * i) / 28;
+    const distance = 58 + Math.random() * 92;
     spark.style.left = `${rect.left + rect.width / 2}px`;
     spark.style.top = `${rect.top + 38}px`;
     spark.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
