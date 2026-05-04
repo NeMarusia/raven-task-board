@@ -229,6 +229,7 @@ function render() {
   renderKanban();
   renderMatrix();
   renderList();
+  renderDone();
   updateRavenMood();
 }
 
@@ -285,7 +286,22 @@ function renderList() {
   if (!tasks.length) root.append(empty('Задач нет. Можно выдохнуть или проверить, не сломалась ли реальность.'));
 }
 
-function taskCard(task) {
+
+function renderDone() {
+  const root = document.querySelector('#doneView');
+  root.innerHTML = '';
+  const tasks = state.tasks
+    .filter(task => task.done)
+    .sort((a, b) => String(b.doneAt || b.createdAt || '').localeCompare(String(a.doneAt || a.createdAt || '')));
+  const summary = document.createElement('p');
+  summary.className = 'done-summary';
+  summary.textContent = `Закрыто задач: ${tasks.length}`;
+  root.append(summary);
+  tasks.forEach(task => root.append(taskCard(task, { archived: true })));
+  if (!tasks.length) root.append(empty('Архив пуст. Пока никто не совершил подвиг, но всё впереди.'));
+}
+
+function taskCard(task, options = {}) {
   const template = document.querySelector('#taskTemplate');
   const card = template.content.firstElementChild.cloneNode(true);
   card.dataset.id = task.id;
@@ -294,12 +310,10 @@ function taskCard(task) {
   const complete = card.querySelector('.complete');
   complete.checked = Boolean(task.done);
   complete.addEventListener('change', () => {
-    task.done = complete.checked;
-    if (task.done) celebrateTask(card);
-    saveAndRender();
+    setTaskDone(task, complete.checked, card);
   });
   card.querySelector('.area').textContent = `${areaName(task.area)} · ${quadrants[task.quadrant]}`;
-  card.querySelector('.due').textContent = task.due ? formatDate(task.due) : '';
+  card.querySelector('.due').textContent = task.done && task.doneAt ? `закрыто ${formatDateTime(task.doneAt)}` : (task.due ? formatDate(task.due) : '');
   const note = card.querySelector('.note');
   note.textContent = task.note;
   note.hidden = !task.note;
@@ -313,17 +327,28 @@ function taskCard(task) {
     card.classList.remove('dragging');
   });
 
-  card.querySelector('.done').addEventListener('click', () => {
-    task.done = true;
-    celebrateTask(card);
-    saveAndRender();
-  });
+  const doneBtn = card.querySelector('.done');
+  const restoreBtn = card.querySelector('.restore');
+  doneBtn.classList.toggle('hidden', Boolean(task.done));
+  restoreBtn.classList.toggle('hidden', !task.done);
+  doneBtn.addEventListener('click', () => setTaskDone(task, true, card));
+  restoreBtn.addEventListener('click', () => setTaskDone(task, false, card));
   card.querySelector('.delete').addEventListener('click', () => {
     state.tasks = state.tasks.filter(item => item.id !== task.id);
     saveAndRender();
   });
   card.querySelector('.move').addEventListener('click', () => quickMove(task));
   return card;
+}
+
+
+function setTaskDone(task, done, card) {
+  const wasDone = Boolean(task.done);
+  task.done = done;
+  if (done && !task.doneAt) task.doneAt = new Date().toISOString();
+  if (!done) delete task.doneAt;
+  if (done && !wasDone) celebrateTask(card);
+  saveAndRender();
 }
 
 function quickMove(task) {
@@ -397,6 +422,11 @@ function areaName(id) {
 
 function formatDate(date) {
   return new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit' }).format(new Date(date + 'T00:00:00'));
+}
+
+
+function formatDateTime(value) {
+  return new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
 function urgencyRank(task) {

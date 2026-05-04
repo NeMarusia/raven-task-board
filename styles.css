@@ -197,3 +197,7 @@ button, .file-label {
   .raven-perch { right: 10px; bottom: 10px; transform: scale(.78); transform-origin: right bottom; }
   .perch-bubble { display: none; }
 }
+
+
+.done-summary { color: var(--muted); margin: 0 0 8px; }
+.task-actions .restore { color: #ddd6fe; border-color: rgba(167,139,250,.38); }
