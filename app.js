@@ -4,10 +4,10 @@ const COMPANION_KEY = 'raven-task-board:companion:v1';
 const PRODUCTIVITY_KEY = 'raven-task-board:productivity:v1';
 
 const areas = [
-  { id: 'work', title: 'Работа' },
-  { id: 'study', title: 'Диплом / учёба' },
-  { id: 'personal', title: 'Личное' },
-  { id: 'waiting', title: 'Жду ответа' },
+  { id: 'work', title: '💼 Работа' },
+  { id: 'study', title: '🎓 Диплом / учёба' },
+  { id: 'personal', title: '🏡 Личное' },
+  { id: 'waiting', title: '📨 Жду ответа' },
 ];
 
 const quadrants = {

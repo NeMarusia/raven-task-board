@@ -1090,3 +1090,75 @@ body.parrot-mode select option {
   background: #fffaf0;
   color: #24180c;
 }
+
+/* Parrot-mode pastel repair: no swamp selects, no concrete task tiles. */
+body.parrot-mode #taskForm select,
+body.parrot-mode .edit-grid select {
+  background-color: #fff7ed;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #0f766e 50%),
+    linear-gradient(135deg, #0f766e 50%, transparent 50%),
+    linear-gradient(135deg, rgba(220,252,231,.95), rgba(224,242,254,.9) 54%, rgba(254,243,199,.86));
+  background-position:
+    calc(100% - 23px) 50%,
+    calc(100% - 16px) 50%,
+    0 0;
+  background-size: 7px 7px, 7px 7px, 100% 100%;
+  background-repeat: no-repeat;
+  color: #254117;
+  border-color: rgba(20,184,166,.28);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.85), 0 10px 24px rgba(20,184,166,.10);
+}
+body.parrot-mode #taskForm select:hover,
+body.parrot-mode .edit-grid select:hover {
+  border-color: rgba(14,165,233,.42);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.9), 0 14px 28px rgba(14,165,233,.13);
+}
+body.parrot-mode #taskForm input[type="date"],
+body.parrot-mode .edit-grid input[type="date"] {
+  background: linear-gradient(135deg, rgba(255,247,237,.96), rgba(240,253,250,.9));
+  color: #4a351f;
+}
+body.parrot-mode .today-stat,
+body.parrot-mode .progress-grid div {
+  background: linear-gradient(135deg, rgba(220,252,231,.82), rgba(224,242,254,.74));
+  border-color: rgba(20,184,166,.22);
+  box-shadow: 0 10px 22px rgba(20,184,166,.08);
+}
+body.parrot-mode .today-stat:nth-child(2),
+body.parrot-mode .progress-grid div:nth-child(2) {
+  background: linear-gradient(135deg, rgba(254,249,195,.86), rgba(255,237,213,.76));
+  border-color: rgba(245,158,11,.24);
+}
+body.parrot-mode .today-stat:nth-child(3),
+body.parrot-mode .progress-grid div:nth-child(3) {
+  background: linear-gradient(135deg, rgba(252,231,243,.78), rgba(237,233,254,.74));
+  border-color: rgba(168,85,247,.20);
+}
+body.parrot-mode .today-mini {
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(240,253,250,.78));
+  border-color: rgba(20,184,166,.20);
+  box-shadow: 0 12px 24px rgba(92,64,36,.10);
+}
+body.parrot-mode .today-mini:nth-child(3n + 1) {
+  background: linear-gradient(135deg, rgba(255,247,237,.94), rgba(254,243,199,.82));
+  border-color: rgba(249,115,22,.20);
+}
+body.parrot-mode .today-mini:nth-child(3n + 2) {
+  background: linear-gradient(135deg, rgba(240,253,244,.94), rgba(207,250,254,.74));
+  border-color: rgba(6,182,212,.20);
+}
+body.parrot-mode .today-mini:nth-child(3n + 3) {
+  background: linear-gradient(135deg, rgba(250,245,255,.94), rgba(252,231,243,.78));
+  border-color: rgba(217,70,239,.18);
+}
+body.parrot-mode .ritual-actions button,
+body.parrot-mode .focus-actions .ghost {
+  background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(240,253,244,.82));
+  color: #365314;
+  border-color: rgba(34,197,94,.22);
+}
+body.parrot-mode .task-card.done-card,
+body.parrot-mode .today-mini {
+  opacity: 1;
+}
