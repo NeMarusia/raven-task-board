@@ -14,6 +14,7 @@
       <p class="subtitle">Канбан по направлениям + срочность/важность, чтобы рабочий хаос перестал кусаться.</p>
     </div>
     <div class="header-actions">
+      <button id="achievementsBtn" class="ghost achievements-entry hidden" type="button">🏆 Полка <span id="achievementCount">0</span></button>
       <button id="exportBtn" class="ghost">Экспорт JSON</button>
       <button id="markdownBtn" class="ghost">Markdown для Obsidian</button>
       <label class="ghost file-label">Импорт<input id="importFile" type="file" accept="application/json" hidden></label>
@@ -78,6 +79,20 @@
     </main>
 
   <div id="achievementShelf" class="achievement-shelf" aria-live="polite"></div>
+
+  <dialog id="achievementsDialog" class="achievements-dialog">
+    <section class="achievements-card">
+      <div class="achievements-head">
+        <div>
+          <p class="eyebrow">Raven trophies</p>
+          <h2>Воронье дерево достижений</h2>
+          <p id="achievementSummary" class="achievement-summary">Пока ветки пустуют.</p>
+        </div>
+        <button id="achievementsClose" type="button" class="ghost">Закрыть</button>
+      </div>
+      <div id="achievementTree" class="achievement-tree" aria-live="polite"></div>
+    </section>
+  </dialog>
 
 
   <dialog id="editDialog" class="edit-dialog">

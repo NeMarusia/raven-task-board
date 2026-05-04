@@ -22,9 +22,11 @@ let editingTaskId = null;
 let achievementState = loadAchievementState();
 let ravenMoodHoldUntil = 0;
 let ravenMoodTimer = null;
+let ravenMoodGuard = null;
+let ravenHeldMood = '';
 
-const RAVEN_LINE_MIN_MS = 3500;
-const RAVEN_LINE_MAX_MS = 5200;
+const RAVEN_LINE_MIN_MS = 4200;
+const RAVEN_LINE_MAX_MS = 5600;
 
 const areaSelect = document.querySelector('#taskArea');
 const form = document.querySelector('#taskForm');
@@ -33,6 +35,10 @@ const searchInput = document.querySelector('#search');
 const editDialog = document.querySelector('#editDialog');
 const editForm = document.querySelector('#editForm');
 const editArea = document.querySelector('#editArea');
+const achievementsBtn = document.querySelector('#achievementsBtn');
+const achievementsDialog = document.querySelector('#achievementsDialog');
+const achievementsClose = document.querySelector('#achievementsClose');
+const achievementCount = document.querySelector('#achievementCount');
 
 // HTML already contains fallback options so the select is never an empty Chrome goblin.
 areaSelect.innerHTML = '';
@@ -98,6 +104,12 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 
+
+achievementsBtn?.addEventListener('click', () => {
+  renderAchievementTree();
+  achievementsDialog?.showModal();
+});
+achievementsClose?.addEventListener('click', () => achievementsDialog?.close());
 
 document.querySelector('#editClose')?.addEventListener('click', () => editDialog.close());
 document.querySelector('#editCancel')?.addEventListener('click', () => editDialog.close());
@@ -219,6 +231,8 @@ function unlockAchievement(id) {
   if (!item) return;
   achievementState.unlocked[id] = new Date().toISOString();
   saveAchievementState();
+  renderAchievementEntry();
+  renderAchievementTree();
   showAchievement(item);
 }
 
@@ -230,6 +244,47 @@ function showAchievement(item) {
   toast.innerHTML = `<div class="achievement-icon">${item.icon}</div><div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.text)}</span></div>`;
   shelf.append(toast);
   setTimeout(() => toast.remove(), 6600);
+}
+
+function unlockedAchievements() {
+  return achievementCatalog
+    .filter(item => achievementState.unlocked[item.id])
+    .sort((a, b) => String(achievementState.unlocked[a.id]).localeCompare(String(achievementState.unlocked[b.id])));
+}
+
+function renderAchievementEntry() {
+  if (!achievementsBtn) return;
+  const count = unlockedAchievements().length;
+  achievementsBtn.classList.toggle('hidden', count === 0);
+  if (achievementCount) achievementCount.textContent = String(count);
+}
+
+function renderAchievementTree() {
+  const tree = document.querySelector('#achievementTree');
+  const summary = document.querySelector('#achievementSummary');
+  if (!tree) return;
+  const unlocked = unlockedAchievements();
+  const lockedCount = Math.max(0, achievementCatalog.length - unlocked.length);
+  tree.innerHTML = '';
+  if (summary) {
+    summary.textContent = unlocked.length
+      ? `На ветках сидит трофеев: ${unlocked.length}. Остальные пока притворяются обычными воронами.`
+      : 'Пока ветки пустуют.';
+  }
+  unlocked.forEach(item => {
+    const node = document.createElement('article');
+    node.className = 'trophy-bird';
+    const date = new Date(achievementState.unlocked[item.id]);
+    const when = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('ru-RU');
+    node.innerHTML = `<div class="trophy-raven" aria-hidden="true">🐦‍⬛${item.icon}</div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.text)}</span>${when ? `<time>${escapeHtml(when)}</time>` : ''}`;
+    tree.append(node);
+  });
+  if (lockedCount) {
+    const node = document.createElement('article');
+    node.className = 'trophy-bird mystery';
+    node.innerHTML = `<div class="trophy-raven" aria-hidden="true">🐦‍⬛?</div><strong>Скрытые ветки</strong><span>Ещё ${lockedCount} ждёт своего момента. Условия засекречены, потому что магия должна кусаться.</span>`;
+    tree.append(node);
+  }
 }
 
 function checkBoardAchievements() {
@@ -394,6 +449,8 @@ async function init() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   render();
   checkBoardAchievements();
+  renderAchievementEntry();
+  renderAchievementTree();
 }
 
 
@@ -413,6 +470,7 @@ function render() {
   renderList();
   renderDone();
   updateRavenMood();
+  renderAchievementEntry();
 }
 
 
@@ -451,12 +509,24 @@ function renderTodayPanel() {
 
 function holdRavenMood(text, durationMs = randomRavenLineDuration()) {
   const mood = document.querySelector('#ravenMood');
+  const perch = document.querySelector('.raven-perch');
   if (!mood) return;
   clearTimeout(ravenMoodTimer);
+  clearInterval(ravenMoodGuard);
+  ravenHeldMood = text;
   ravenMoodHoldUntil = Date.now() + durationMs;
-  mood.textContent = text;
+  mood.textContent = ravenHeldMood;
+  perch?.classList.add('speaking');
+  ravenMoodGuard = setInterval(() => {
+    if (Date.now() >= ravenMoodHoldUntil) return;
+    if (mood.textContent !== ravenHeldMood) mood.textContent = ravenHeldMood;
+  }, 120);
   ravenMoodTimer = setTimeout(() => {
     ravenMoodHoldUntil = 0;
+    clearInterval(ravenMoodGuard);
+    ravenMoodGuard = null;
+    ravenHeldMood = '';
+    perch?.classList.remove('speaking');
     updateRavenMood({ force: true });
   }, durationMs);
 }
@@ -468,7 +538,10 @@ function randomRavenLineDuration() {
 function updateRavenMood(options = {}) {
   const mood = document.querySelector('#ravenMood');
   if (!mood) return;
-  if (!options.force && Date.now() < ravenMoodHoldUntil) return;
+  if (!options.force && Date.now() < ravenMoodHoldUntil) {
+    if (ravenHeldMood && mood.textContent !== ravenHeldMood) mood.textContent = ravenHeldMood;
+    return;
+  }
   const active = state.tasks.filter(task => !task.done).length;
   const hot = state.tasks.filter(task => !task.done && task.quadrant === 'urgent-important').length;
   if (!active) mood.textContent = 'Пусто. Подозрительно, но прекрасно.';
