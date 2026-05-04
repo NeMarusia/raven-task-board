@@ -272,6 +272,7 @@ function taskCard(task) {
   complete.checked = Boolean(task.done);
   complete.addEventListener('change', () => {
     task.done = complete.checked;
+    if (task.done) celebrateTask(card);
     saveAndRender();
   });
   card.querySelector('.area').textContent = `${areaName(task.area)} · ${quadrants[task.quadrant]}`;
@@ -291,6 +292,7 @@ function taskCard(task) {
 
   card.querySelector('.done').addEventListener('click', () => {
     task.done = true;
+    celebrateTask(card);
     saveAndRender();
   });
   card.querySelector('.delete').addEventListener('click', () => {
@@ -307,6 +309,32 @@ function quickMove(task) {
   const nextQuadrant = prompt(`Квадрант: ${Object.keys(quadrants).join(', ')}`, task.quadrant);
   if (nextQuadrant && quadrants[nextQuadrant]) task.quadrant = nextQuadrant;
   saveAndRender();
+}
+
+
+function celebrateTask(card) {
+  const rect = card.getBoundingClientRect();
+  const raven = document.createElement('div');
+  raven.className = 'raven-celebration';
+  raven.textContent = '🐦‍⬛';
+  raven.style.left = `${rect.left + rect.width / 2}px`;
+  raven.style.top = `${rect.top + 18}px`;
+  document.body.append(raven);
+  raven.addEventListener('animationend', () => raven.remove(), { once: true });
+
+  for (let i = 0; i < 18; i += 1) {
+    const spark = document.createElement('span');
+    spark.className = 'spark';
+    const angle = (Math.PI * 2 * i) / 18;
+    const distance = 42 + Math.random() * 58;
+    spark.style.left = `${rect.left + rect.width / 2}px`;
+    spark.style.top = `${rect.top + 38}px`;
+    spark.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+    spark.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+    spark.style.setProperty('--hue', `${250 + Math.random() * 90}`);
+    document.body.append(spark);
+    spark.addEventListener('animationend', () => spark.remove(), { once: true });
+  }
 }
 
 function wireDropzone(zone, applyChange) {

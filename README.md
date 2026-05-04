@@ -24,3 +24,21 @@ node server.js
 Состояние доски автоматически пишется в Obsidian-файл:
 
 `/home/sunrise/Obsidian/данные о владельце/работа/Воронья доска задач.md`
+
+
+## Стек
+
+- Frontend: vanilla HTML, CSS, JavaScript.
+- Backend: Node.js built-in `http`, без фреймворков.
+- Storage: Markdown-файл в Obsidian + служебный JSON-блок внутри заметки.
+- Sync: Syncthing разносит Obsidian vault между NUC и Mac.
+- Deploy locally: `node server.js`.
+
+## Особенности
+
+- Канбан по направлениям.
+- Матрица Эйзенхауэра.
+- Drag & drop.
+- Markdown export.
+- Obsidian-backed sync.
+- Маленький праздничный ворон и конфетти при закрытии задачи.
