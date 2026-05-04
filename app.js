@@ -136,6 +136,34 @@ document.querySelector('#importFile').addEventListener('change', async event => 
 });
 
 
+const ravenLines = [
+  'Кар. Я наблюдаю.',
+  'Не тыкай без задачи. Хотя ладно, тыкай.',
+  'Закрой одну задачу — получишь фейерверк.',
+  'Срочное видишь? Я тоже вижу. Кар.',
+  'Я не прокрастинация. Я моральная поддержка.',
+  'Порядок в задачах — порядок в гнезде.',
+];
+const ravenActions = ['peck', 'flap', 'side-eye'];
+
+document.querySelector('#perchRaven')?.addEventListener('click', () => {
+  const perch = document.querySelector('.raven-perch');
+  const mood = document.querySelector('#ravenMood');
+  if (!perch || !mood) return;
+  const action = ravenActions[Math.floor(Math.random() * ravenActions.length)];
+  perch.classList.remove(...ravenActions);
+  void perch.offsetWidth;
+  perch.classList.add(action);
+  const oldMood = mood.textContent;
+  mood.textContent = ravenLines[Math.floor(Math.random() * ravenLines.length)];
+  setTimeout(() => {
+    perch.classList.remove(action);
+    updateRavenMood();
+  }, 1800);
+});
+
+
+
 
 function makeId() {
   if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
