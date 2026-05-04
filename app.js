@@ -22,6 +22,8 @@ const form = document.querySelector('#taskForm');
 const noteInput = document.querySelector('#taskNote');
 const searchInput = document.querySelector('#search');
 
+// HTML already contains fallback options so the select is never an empty Chrome goblin.
+areaSelect.innerHTML = '';
 areas.forEach(area => {
   const option = document.createElement('option');
   option.value = area.id;
@@ -74,6 +76,23 @@ document.querySelector('#exportBtn').addEventListener('click', () => {
   URL.revokeObjectURL(link.href);
 });
 
+
+
+document.querySelector('#markdownBtn').addEventListener('click', async () => {
+  const markdown = toMarkdown();
+  try {
+    await navigator.clipboard.writeText(markdown);
+    alert('Markdown скопирован в буфер. Можно вставлять в Obsidian.');
+  } catch {
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Воронья доска задач — ${new Date().toISOString().slice(0,10)}.md`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+});
+
 document.querySelector('#importFile').addEventListener('change', async event => {
   const file = event.target.files[0];
   if (!file) return;
@@ -82,6 +101,36 @@ document.querySelector('#importFile').addEventListener('change', async event => 
   state = imported;
   saveAndRender();
 });
+
+
+function toMarkdown() {
+  const lines = [];
+  lines.push(`# Воронья доска задач — ${new Date().toLocaleDateString('ru-RU')}`);
+  lines.push('');
+  lines.push('> Экспорт из Raven Task Board.');
+  lines.push('');
+  for (const [qid, qtitle] of Object.entries(quadrants)) {
+    const tasks = state.tasks.filter(task => !task.done && task.quadrant === qid);
+    lines.push(`## ${qtitle}`);
+    lines.push('');
+    if (!tasks.length) {
+      lines.push('_Пусто._');
+      lines.push('');
+      continue;
+    }
+    for (const task of tasks) {
+      const due = task.due ? ` 📅 ${task.due}` : '';
+      lines.push(`- [ ] **${escapeMd(task.title)}** — ${escapeMd(areaName(task.area))}${due}`);
+      if (task.note) lines.push(`  - ${escapeMd(task.note).replace(/\n/g, '\n  - ')}`);
+    }
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+function escapeMd(text) {
+  return String(text).replace(/\|/g, '\\|');
+}
 
 function loadState() {
   const saved = localStorage.getItem(STORAGE_KEY);

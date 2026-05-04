@@ -14,7 +14,8 @@
       <p class="subtitle">Канбан по направлениям + срочность/важность, чтобы рабочий хаос перестал кусаться.</p>
     </div>
     <div class="header-actions">
-      <button id="exportBtn" class="ghost">Экспорт</button>
+      <button id="exportBtn" class="ghost">Экспорт JSON</button>
+      <button id="markdownBtn" class="ghost">Markdown для Obsidian</button>
       <label class="ghost file-label">Импорт<input id="importFile" type="file" accept="application/json" hidden></label>
       <button id="resetBtn" class="danger">Очистить</button>
     </div>
@@ -25,7 +26,12 @@
       <h2>Новая задача</h2>
       <form id="taskForm">
         <input id="taskTitle" required placeholder="Что надо сделать?" maxlength="160" />
-        <select id="taskArea" required></select>
+        <select id="taskArea" required>
+          <option value="work">Работа</option>
+          <option value="study">Диплом / учёба</option>
+          <option value="personal">Личное</option>
+          <option value="waiting">Жду ответа</option>
+        </select>
         <select id="taskQuadrant" required>
           <option value="urgent-important">🔥 Срочно + важно</option>
           <option value="not-urgent-important">🌱 Не срочно + важно</option>
