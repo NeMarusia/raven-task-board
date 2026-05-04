@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Воронья доска задач</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Raven Task Board</p>
+      <h1>Воронья доска задач</h1>
+      <p class="subtitle">Канбан по направлениям + срочность/важность, чтобы рабочий хаос перестал кусаться.</p>
+    </div>
+    <div class="header-actions">
+      <button id="exportBtn" class="ghost">Экспорт</button>
+      <label class="ghost file-label">Импорт<input id="importFile" type="file" accept="application/json" hidden></label>
+      <button id="resetBtn" class="danger">Очистить</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="composer card">
+      <h2>Новая задача</h2>
+      <form id="taskForm">
+        <input id="taskTitle" required placeholder="Что надо сделать?" maxlength="160" />
+        <select id="taskArea" required></select>
+        <select id="taskQuadrant" required>
+          <option value="urgent-important">🔥 Срочно + важно</option>
+          <option value="not-urgent-important">🌱 Не срочно + важно</option>
+          <option value="urgent-not-important">⚡ Срочно + неважно</option>
+          <option value="not-urgent-not-important">🪶 Не срочно + неважно</option>
+        </select>
+        <input id="taskDue" type="date" />
+        <button type="submit">Добавить</button>
+      </form>
+      <textarea id="taskNote" placeholder="Комментарий / кто ждёт / где искать контекст"></textarea>
+    </section>
+
+    <section class="toolbar">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-view="kanban">Канбан</button>
+        <button class="tab" data-view="matrix">Срочно / важно</button>
+        <button class="tab" data-view="list">Список</button>
+      </div>
+      <input id="search" placeholder="Поиск по задачам" />
+    </section>
+
+    <section id="kanbanView" class="view kanban-view"></section>
+    <section id="matrixView" class="view matrix-view hidden"></section>
+    <section id="listView" class="view list-view hidden"></section>
+  </main>
+
+  <template id="taskTemplate">
+    <article class="task-card" draggable="true">
+      <div class="task-topline">
+        <span class="pill area"></span>
+        <span class="due"></span>
+      </div>
+      <h3></h3>
+      <p class="note"></p>
+      <div class="task-actions">
+        <button class="move">Перенести</button>
+        <button class="done">Готово</button>
+        <button class="delete">Удалить</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
