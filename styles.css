@@ -554,3 +554,193 @@ button, .file-label {
   background: linear-gradient(90deg, rgba(251,113,133,.18), rgba(249,115,22,.95), rgba(253,224,71,.62));
   box-shadow: 0 10px 24px rgba(0,0,0,.42), 0 0 28px rgba(249,115,22,.4);
 }
+
+/* Livelier perches: branches should look like something a raven chose, not a sad loading bar. */
+.perch-stick {
+  position: relative;
+  overflow: visible;
+  transform-origin: 50% 0;
+}
+.perch-stick::before,
+.perch-stick::after,
+.companion-preview .perch-decoration,
+.companion-preview::before,
+.companion-preview::after {
+  pointer-events: none;
+}
+.raven-perch[data-perch="twig"] .perch-stick,
+.raven-perch[data-perch="moon"] .perch-stick,
+.raven-perch[data-perch="crystal"] .perch-stick,
+.raven-perch[data-perch="fire"] .perch-stick {
+  height: 12px;
+  border-radius: 58% 42% 48% 52% / 64% 52% 48% 36%;
+  transform: rotate(-2deg) translateY(-1px);
+}
+.raven-perch[data-perch="twig"] .perch-stick {
+  background:
+    radial-gradient(circle at 18% 42%, rgba(255,255,255,.18) 0 4px, transparent 5px),
+    linear-gradient(90deg, #51351f, #8b5a2b 38%, #5f3d22 72%, #2f2117);
+  box-shadow: 0 10px 26px rgba(0,0,0,.44), 0 0 18px rgba(52,211,153,.12);
+}
+.raven-perch[data-perch="twig"] .perch-stick::before,
+.raven-perch[data-perch="moon"] .perch-stick::before,
+.raven-perch[data-perch="crystal"] .perch-stick::before,
+.raven-perch[data-perch="fire"] .perch-stick::before {
+  content: '🌿';
+  position: absolute;
+  right: -18px;
+  top: -17px;
+  font-size: 22px;
+  transform: rotate(18deg);
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,.35));
+}
+.raven-perch[data-perch="twig"] .perch-stick::after,
+.raven-perch[data-perch="moon"] .perch-stick::after,
+.raven-perch[data-perch="crystal"] .perch-stick::after,
+.raven-perch[data-perch="fire"] .perch-stick::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  bottom: -6px;
+  width: 46px;
+  height: 9px;
+  border-bottom: 5px solid rgba(92,58,31,.95);
+  border-radius: 50%;
+  transform: rotate(-8deg);
+}
+.raven-perch[data-perch="swing"] .perch-stick {
+  width: 122px;
+  height: 13px;
+  border-radius: 9px;
+  background: linear-gradient(90deg, #8b5a2b, #e5b06e 45%, #9a6734);
+  box-shadow: 0 10px 24px rgba(0,0,0,.42);
+  animation: perch-swing 3.8s ease-in-out infinite;
+}
+.raven-perch[data-perch="swing"] .perch-stick::before,
+.raven-perch[data-perch="swing"] .perch-stick::after {
+  content: '';
+  position: absolute;
+  top: -64px;
+  width: 2px;
+  height: 68px;
+  background: linear-gradient(#d1d5db, #737373);
+  box-shadow: 0 0 8px rgba(255,255,255,.22);
+}
+.raven-perch[data-perch="swing"] .perch-stick::before { left: 8px; transform: rotate(-5deg); }
+.raven-perch[data-perch="swing"] .perch-stick::after { right: 8px; transform: rotate(5deg); }
+.raven-perch[data-perch="rope"] .perch-stick {
+  width: 112px;
+  height: 72px;
+  margin-top: -58px;
+  border-radius: 50%;
+  background: none;
+  border: 8px solid transparent;
+  border-top-color: #ef4444;
+  border-right-color: #eab308;
+  border-bottom-color: #22c55e;
+  border-left-color: #3b82f6;
+  box-shadow: 0 10px 26px rgba(0,0,0,.38), inset 0 0 0 2px rgba(255,255,255,.16);
+  animation: rope-hoop-sway 4.4s ease-in-out infinite;
+}
+.raven-perch[data-perch="rope"] .perch-stick::before {
+  content: '';
+  position: absolute;
+  left: 47px;
+  top: -24px;
+  width: 14px;
+  height: 20px;
+  border: 3px solid #d1d5db;
+  border-radius: 50%;
+}
+.raven-perch[data-perch="rope"] .perch-stick::after {
+  content: ' tassel';
+  position: absolute;
+  left: 35px;
+  bottom: -29px;
+  width: 38px;
+  height: 25px;
+  color: transparent;
+  background: repeating-linear-gradient(90deg, #ef4444 0 4px, #eab308 4px 8px, #22c55e 8px 12px, #3b82f6 12px 16px, #f8fafc 16px 20px);
+  clip-path: polygon(0 0, 100% 0, 84% 100%, 68% 64%, 52% 100%, 36% 62%, 18% 100%);
+}
+.raven-perch[data-perch="hollow"] .perch-stick {
+  width: 118px;
+  height: 44px;
+  margin-top: -18px;
+  border-radius: 48% 52% 45% 55% / 58% 44% 56% 42%;
+  background:
+    radial-gradient(circle at 50% 52%, #110c08 0 18px, #3b2415 19px 24px, transparent 25px),
+    radial-gradient(circle at 22% 32%, rgba(255,255,255,.18) 0 5px, transparent 6px),
+    linear-gradient(90deg, #5b341e, #9f6b35 45%, #4a2d1e);
+  box-shadow: 0 12px 28px rgba(0,0,0,.45), inset 0 0 18px rgba(0,0,0,.35);
+}
+.raven-perch[data-perch="hollow"] .perch-stick::before {
+  content: '🌱';
+  position: absolute;
+  right: -13px;
+  top: -13px;
+  font-size: 20px;
+  transform: rotate(28deg);
+}
+@keyframes perch-swing {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes rope-hoop-sway {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(2px); }
+}
+
+.companion-preview[data-perch="twig"]::after,
+.companion-preview[data-perch="moon"]::after,
+.companion-preview[data-perch="crystal"]::after,
+.companion-preview[data-perch="fire"]::after {
+  height: 12px;
+  border-radius: 58% 42% 48% 52% / 64% 52% 48% 36%;
+  transform: rotate(-3deg);
+}
+.companion-preview[data-perch="twig"]::after {
+  background:
+    radial-gradient(circle at 18% 42%, rgba(255,255,255,.18) 0 4px, transparent 5px),
+    linear-gradient(90deg, #51351f, #8b5a2b 38%, #5f3d22 72%, #2f2117);
+}
+.companion-preview[data-perch="twig"] .trophy-raven { z-index: 2; }
+.companion-preview[data-perch="swing"]::after {
+  left: 42px;
+  right: 42px;
+  bottom: 27px;
+  height: 13px;
+  border-radius: 9px;
+  background: linear-gradient(90deg, #8b5a2b, #e5b06e 45%, #9a6734);
+}
+.companion-preview[data-perch="swing"] {
+  background:
+    linear-gradient(90deg, transparent 31%, rgba(209,213,219,.75) 31.8%, transparent 33%, transparent 67%, rgba(209,213,219,.75) 68%, transparent 69%),
+    radial-gradient(circle at 50% 34%, rgba(167,139,250,.2), transparent 42%),
+    rgba(255,255,255,.04);
+}
+.companion-preview[data-perch="rope"]::after {
+  left: 43px;
+  right: 43px;
+  bottom: 27px;
+  height: 86px;
+  border-radius: 50%;
+  background: none;
+  border: 9px solid transparent;
+  border-top-color: #ef4444;
+  border-right-color: #eab308;
+  border-bottom-color: #22c55e;
+  border-left-color: #3b82f6;
+  box-shadow: 0 10px 24px rgba(0,0,0,.38), inset 0 0 0 2px rgba(255,255,255,.16);
+}
+.companion-preview[data-perch="hollow"]::after {
+  left: 42px;
+  right: 42px;
+  bottom: 24px;
+  height: 46px;
+  border-radius: 48% 52% 45% 55% / 58% 44% 56% 42%;
+  background:
+    radial-gradient(circle at 50% 52%, #110c08 0 18px, #3b2415 19px 24px, transparent 25px),
+    radial-gradient(circle at 22% 32%, rgba(255,255,255,.18) 0 5px, transparent 6px),
+    linear-gradient(90deg, #5b341e, #9f6b35 45%, #4a2d1e);
+}
