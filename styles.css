@@ -746,3 +746,88 @@ button, .file-label {
     radial-gradient(circle at 22% 32%, rgba(255,255,255,.18) 0 5px, transparent 6px),
     linear-gradient(90deg, #5b341e, #9f6b35 45%, #4a2d1e);
 }
+
+.productivity-panel {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.05fr) minmax(240px, 1fr) minmax(240px, 1fr);
+  gap: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.focus-card, .ritual-card, .progress-moodboard {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255,255,255,.045);
+}
+.focus-card { display: grid; gap: 12px; }
+.focus-clock {
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: rgba(167,139,250,.16);
+  color: #ddd6fe;
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 900;
+  letter-spacing: .04em;
+  box-shadow: inset 0 0 22px rgba(167,139,250,.16);
+}
+.focus-actions, .ritual-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ritual-actions button { background: rgba(255,255,255,.08); color: var(--text); border: 1px solid var(--line); }
+#focusStatus, #ritualHint { color: var(--muted); margin: 0; line-height: 1.4; }
+.progress-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.progress-grid div {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(0,0,0,.14);
+}
+.progress-grid strong { display: block; font-size: 24px; color: var(--ok); }
+.progress-grid span { display: block; color: var(--muted); font-size: 12px; }
+.nest-growth {
+  min-height: 42px;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  background: radial-gradient(circle at 20% 20%, rgba(52,211,153,.16), transparent 36%), rgba(255,255,255,.035);
+  font-size: 22px;
+  line-height: 1.45;
+}
+.raven-perch.focus-guard .perch-raven { animation: focus-guard 1.6s ease-in-out infinite; }
+@keyframes focus-guard {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10px) rotate(3deg) scale(1.05); }
+}
+.raven-perch[data-hat="flower"]::before,
+.companion-preview[data-hat="flower"]::before { content: '🌺'; transform: rotate(-10deg); }
+.raven-perch[data-aura="rainbow"] .perch-raven,
+.companion-preview[data-aura="rainbow"] { text-shadow: 0 0 16px rgba(239,68,68,.7), 0 0 28px rgba(59,130,246,.6), 0 0 38px rgba(34,197,94,.45); }
+.raven-perch[data-aura="coffee"] .perch-raven,
+.companion-preview[data-aura="coffee"] { text-shadow: 0 0 18px rgba(180,83,9,.78), 0 0 30px rgba(251,191,36,.32); }
+body.parrot-mode {
+  --bg: #fff7ed;
+  --panel: #fffaf0;
+  --panel-2: #ffedd5;
+  --text: #312313;
+  --muted: #7c5f43;
+  --accent: #22c55e;
+  --accent-2: #06b6d4;
+  --line: rgba(124,95,67,.2);
+  --shadow: 0 18px 45px rgba(124,95,67,.16);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(34,197,94,.22), transparent 34%),
+    radial-gradient(circle at 88% 12%, rgba(6,182,212,.18), transparent 30%),
+    var(--bg);
+}
+body.parrot-mode input,
+body.parrot-mode select,
+body.parrot-mode textarea { background: #fffaf0; }
+body.parrot-mode .card,
+body.parrot-mode .column,
+body.parrot-mode .matrix-cell,
+body.parrot-mode .list-view { background: rgba(255,250,240,.88); }
+body.parrot-mode .ghost { background: rgba(34,197,94,.08); }
+body.parrot-mode .perch-bubble { background: rgba(255,250,240,.86); }
+@media (max-width: 980px) {
+  .productivity-panel { grid-template-columns: 1fr; }
+}

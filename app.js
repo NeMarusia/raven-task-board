@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'raven-task-board:v1';
 const ACHIEVEMENTS_KEY = 'raven-task-board:achievements:v1';
 const COMPANION_KEY = 'raven-task-board:companion:v1';
+const PRODUCTIVITY_KEY = 'raven-task-board:productivity:v1';
 
 const areas = [
   { id: 'work', title: 'Работа' },
@@ -27,6 +28,8 @@ let ravenMoodTimer = null;
 let ravenMoodGuard = null;
 let ravenHeldMood = '';
 let companionState = loadCompanionState();
+let productivityState = loadProductivityState();
+let focusTimer = null;
 
 const RAVEN_LINE_MIN_MS = 4200;
 const RAVEN_LINE_MAX_MS = 5600;
@@ -48,6 +51,9 @@ const companionBtn = document.querySelector('#companionBtn');
 const companionDialog = document.querySelector('#companionDialog');
 const companionClose = document.querySelector('#companionClose');
 const companionCount = document.querySelector('#companionCount');
+const themeBtn = document.querySelector('#themeBtn');
+const focusStart = document.querySelector('#focusStart');
+const focusStop = document.querySelector('#focusStop');
 
 // HTML already contains fallback options so the select is never an empty Chrome goblin.
 areaSelect.innerHTML = '';
@@ -65,6 +71,7 @@ const cosmeticCatalog = [
   { id: 'hat-crown', type: 'hat', icon: '👑', title: 'Корона хаоса', value: 'crown' },
   { id: 'hat-party', type: 'hat', icon: '🥳', title: 'Колпак победы', value: 'party' },
   { id: 'hat-cap', type: 'hat', icon: '🎩', title: 'Цилиндр джентльворона', value: 'cap' },
+  { id: 'hat-flower', type: 'hat', icon: '🌺', title: 'Попугайский цветочек', value: 'flower' },
   { id: 'perch-twig', type: 'perch', icon: '🌿', title: 'Обычная ветка', value: 'twig', starter: true },
   { id: 'perch-moon', type: 'perch', icon: '🌙', title: 'Лунная жердочка', value: 'moon' },
   { id: 'perch-crystal', type: 'perch', icon: '💎', title: 'Кристальная ветвь', value: 'crystal' },
@@ -76,6 +83,8 @@ const cosmeticCatalog = [
   { id: 'aura-stars', type: 'aura', icon: '✨', title: 'Звёздная пыль', value: 'stars' },
   { id: 'aura-embers', type: 'aura', icon: '🟠', title: 'Тёплые искры', value: 'embers' },
   { id: 'aura-ghost', type: 'aura', icon: '👻', title: 'Туман фамильяра', value: 'ghost' },
+  { id: 'aura-rainbow', type: 'aura', icon: '🌈', title: 'Радужный шум', value: 'rainbow' },
+  { id: 'aura-coffee', type: 'aura', icon: '☕', title: 'Кофейная концентрация', value: 'coffee' },
 ];
 
 function loadCompanionState() {
@@ -195,6 +204,77 @@ function formatDuration(ms) {
   return `${minutes} мин`;
 }
 
+
+function loadProductivityState() {
+  const fallback = { focusDone: 0, focusActiveUntil: 0, focusStartedAt: 0, rituals: {}, theme: 'raven', visits: {}, completedByDay: {} };
+  try { return { ...fallback, ...JSON.parse(localStorage.getItem(PRODUCTIVITY_KEY) || '{}') }; }
+  catch { return fallback; }
+}
+function saveProductivityState() { localStorage.setItem(PRODUCTIVITY_KEY, JSON.stringify(productivityState)); }
+function markVisit() { productivityState.visits[todayKey()] = true; saveProductivityState(); }
+function recordCompletion() { productivityState.completedByDay[todayKey()] = (productivityState.completedByDay[todayKey()] || 0) + 1; saveProductivityState(); }
+function streakDays(map) {
+  let streak = 0; const date = new Date();
+  while (map[date.toISOString().slice(0,10)]) { streak += 1; date.setDate(date.getDate() - 1); }
+  return streak;
+}
+function applyTheme() {
+  document.body.classList.toggle('parrot-mode', productivityState.theme === 'parrot');
+  const bird = productivityState.theme === 'parrot' ? '🦜' : '🐦‍⬛';
+  document.querySelector('#perchRaven').textContent = bird;
+  document.querySelector('#companionPreview').textContent = bird;
+  if (themeBtn) themeBtn.textContent = productivityState.theme === 'parrot' ? '🌙 Raven-mode' : '☀️ Попугай-mode';
+}
+function startFocusSession() {
+  productivityState.focusStartedAt = Date.now();
+  productivityState.focusActiveUntil = Date.now() + 25 * 60 * 1000;
+  saveProductivityState();
+  unlockAchievement('branch-focus');
+  holdRavenMood('Фокус начался. Я бдю, ты работаешь. Сделка честная.', 5200);
+  tickFocus();
+}
+function stopFocusSession(done = false) {
+  clearInterval(focusTimer); focusTimer = null;
+  if (done) {
+    productivityState.focusDone += 1;
+    unlockAchievement('focus-feather');
+    if (productivityState.focusDone >= 3) unlockAchievement('deep-perch');
+    companionState.activity += 40;
+    maybeGiveRavenGift();
+    holdRavenMood('Фокус-сессия закрыта. Перо в гнездо, хаос в угол.', 5600);
+  } else if (productivityState.focusActiveUntil) holdRavenMood('Слезли с ветки. Бывает. Ворон осуждает нежно.', 4600);
+  productivityState.focusActiveUntil = 0; productivityState.focusStartedAt = 0; saveProductivityState(); renderProductivity();
+}
+function tickFocus() {
+  clearInterval(focusTimer);
+  const clock = document.querySelector('#focusClock'); const status = document.querySelector('#focusStatus');
+  const update = () => {
+    const left = Math.max(0, productivityState.focusActiveUntil - Date.now());
+    const m = Math.floor(left / 60000), sec = Math.floor((left % 60000) / 1000);
+    if (clock) clock.textContent = `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    if (status) status.textContent = left ? 'Ворон бдит. Не кормим хаос.' : 'Сессия завершена.';
+    document.querySelector('.raven-perch')?.classList.toggle('focus-guard', left > 0);
+    if (!left) stopFocusSession(true);
+  };
+  update(); focusTimer = setInterval(update, 1000);
+}
+function runRitual(name) {
+  productivityState.rituals[name] = (productivityState.rituals[name] || 0) + 1; saveProductivityState(); unlockAchievement('ritual-circle');
+  const hint = document.querySelector('#ritualHint');
+  if (name === 'fires') { activeFilter = 'all'; document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active', b.dataset.filter==='all')); holdRavenMood('Ритуал пожаров: смотри на 🔥 Срочно + важно. Тушим не всё, а первое настоящее.', 6200); if (hint) hint.textContent='Охота на пожары: начни с одной срочной и важной карточки.'; }
+  if (name === 'tails') { activeFilter = 'overdue'; document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active', b.dataset.filter==='overdue')); holdRavenMood('Ритуал хвостов: просроченное не кусается, если смотреть ему в глаза.', 6200); if (hint) hint.textContent='Хвосты: фильтр просроченного включён.'; }
+  if (name === 'frog') { activeFilter = 'all'; holdRavenMood('Ритуал мерзкой жабы: выбери одну неприятную карточку и укуси её первой.', 6200); if (hint) hint.textContent='Жаба дня: одна неприятная задача. Не геройствуй, просто начни.'; }
+  render();
+}
+function renderProductivity() {
+  applyTheme();
+  const board = document.querySelector('#progressMoodboard'); if (!board) return;
+  const done = state.tasks.filter(t => t.done).length;
+  const visitStreak = streakDays(productivityState.visits || {});
+  const closedStreak = streakDays(productivityState.completedByDay || {});
+  const nest = Math.min(12, Math.floor(done / 2) + productivityState.focusDone);
+  board.innerHTML = `<p class="eyebrow">Progress nest</p><h2>Гнездо прогресса</h2><div class="progress-grid"><div><strong>${done}</strong><span>закрыто задач</span></div><div><strong>${visitStreak}</strong><span>дней заходов подряд</span></div><div><strong>${closedStreak}</strong><span>дней с закрытиями</span></div><div><strong>${productivityState.focusDone}</strong><span>фокус-сессий</span></div></div><div class="nest-growth" aria-label="рост гнезда">${'🪹'.repeat(Math.max(1, Math.min(4, nest)))}${'🪶'.repeat(Math.max(0, nest))}</div>`;
+}
 document.addEventListener('keydown', event => {
   if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
   trackRavenActivity('key', 1);
@@ -206,6 +286,11 @@ document.addEventListener('keydown', event => {
 document.addEventListener('click', event => {
   if (event.target.closest('button, input, select, textarea, label, .task-card')) trackRavenActivity('click', 1);
 }, { capture: true });
+focusStart?.addEventListener('click', startFocusSession);
+focusStop?.addEventListener('click', () => stopFocusSession(false));
+themeBtn?.addEventListener('click', () => { productivityState.theme = productivityState.theme === 'parrot' ? 'raven' : 'parrot'; saveProductivityState(); renderProductivity(); unlockAchievement('sunny-parrot'); });
+document.querySelectorAll('.ritual').forEach(button => button.addEventListener('click', () => runRitual(button.dataset.ritual)));
+
 
 form.addEventListener('submit', event => {
   event.preventDefault();
@@ -368,6 +453,11 @@ const achievementCatalog = [
   { id: 'json-carrier', icon: '📦', title: 'Посылка ворона', text: 'Доска упакована для перелёта.' },
   { id: 'mirror-ritual', icon: '🪞', title: 'Зеркальный ритуал', text: 'Старое состояние вернулось из файла.' },
   { id: 'phoenix-dust', icon: '🧹', title: 'Пепел феникса', text: 'Иногда чистый лист тоже заклинание.' },
+  { id: 'branch-focus', icon: '🪶', title: 'Села на ветку', text: 'Фокус-сессия началась. Ворон на страже.' },
+  { id: 'focus-feather', icon: '🪶', title: 'Фокусное перо', text: '25 минут хаос не ел клавиатуру.' },
+  { id: 'deep-perch', icon: '🪵', title: 'Глубокая жердочка', text: 'Фокус уже становится привычкой.' },
+  { id: 'ritual-circle', icon: '🕯️', title: 'Ритуальный круг', text: 'Доска стала не списком, а маленьким обрядом.' },
+  { id: 'sunny-parrot', icon: '🦜', title: 'Солнечный фамильяр', text: 'Иногда даже ворону нужен отпуск в тропиках.' },
 ];
 
 function loadAchievementState() {
@@ -611,11 +701,14 @@ async function saveRemoteState(nextState) {
 async function init() {
   state = await loadState();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  markVisit();
   render();
   checkBoardAchievements();
   renderAchievementEntry();
   renderAchievementTree();
   renderCompanion();
+  renderProductivity();
+  if (productivityState.focusActiveUntil > Date.now()) tickFocus();
 }
 
 
@@ -637,6 +730,7 @@ function render() {
   updateRavenMood();
   renderAchievementEntry();
   renderCompanion();
+  renderProductivity();
 }
 
 
@@ -833,6 +927,7 @@ function setTaskDone(task, done, card) {
     if (wasDone) unlockAchievement('second-thought');
   }
   if (done && !wasDone) {
+    recordCompletion();
     trackRavenActivity('click', 10);
     celebrateTask(card);
   }

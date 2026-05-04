@@ -14,6 +14,7 @@
       <p class="subtitle">Канбан по направлениям + срочность/важность, чтобы рабочий хаос перестал кусаться.</p>
     </div>
     <div class="header-actions">
+      <button id="themeBtn" class="ghost" type="button">☀️ Попугай-mode</button>
       <button id="companionBtn" class="ghost companion-entry" type="button">🐦‍⬛ Фамильяр <span id="companionCount">0</span></button>
       <button id="achievementsBtn" class="ghost achievements-entry hidden" type="button">🏆 Полка <span id="achievementCount">0</span></button>
       <button id="exportBtn" class="ghost">Экспорт JSON</button>
@@ -56,6 +57,32 @@
     </section>
 
     <section id="todayPanel" class="today-panel card"></section>
+
+    <section class="productivity-panel card">
+      <div class="focus-card">
+        <div>
+          <p class="eyebrow">Focus branch</p>
+          <h2>Фокус-сессия</h2>
+          <p id="focusStatus">Сесть на ветку и 25 минут не кормить хаос.</p>
+        </div>
+        <div class="focus-clock" id="focusClock">25:00</div>
+        <div class="focus-actions">
+          <button id="focusStart" type="button">Сесть на ветку</button>
+          <button id="focusStop" class="ghost" type="button">Слезть</button>
+        </div>
+      </div>
+      <div class="ritual-card">
+        <p class="eyebrow">Rituals</p>
+        <h2>Маленькие ритуалы</h2>
+        <div class="ritual-actions">
+          <button class="ritual" data-ritual="fires" type="button">🔥 Разгрести пожары</button>
+          <button class="ritual" data-ritual="tails" type="button">🧵 Разобрать хвосты</button>
+          <button class="ritual" data-ritual="frog" type="button">🐸 Закрыть мерзкую задачу</button>
+        </div>
+        <p id="ritualHint">Выбери ритуал — ворон подсветит, куда смотреть.</p>
+      </div>
+      <div id="progressMoodboard" class="progress-moodboard"></div>
+    </section>
 
     <section class="toolbar">
       <div class="tabs" role="tablist">
