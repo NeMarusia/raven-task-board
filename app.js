@@ -20,6 +20,11 @@ let draggedId = null;
 let activeFilter = 'all';
 let editingTaskId = null;
 let achievementState = loadAchievementState();
+let ravenMoodHoldUntil = 0;
+let ravenMoodTimer = null;
+
+const RAVEN_LINE_MIN_MS = 3500;
+const RAVEN_LINE_MAX_MS = 5200;
 
 const areaSelect = document.querySelector('#taskArea');
 const form = document.querySelector('#taskForm');
@@ -51,14 +56,21 @@ form.addEventListener('submit', event => {
     createdAt: new Date().toISOString(),
     done: false,
   };
+  if (task.due) unlockAchievement('deadline-sigil');
+  if (task.note) unlockAchievement('footnote-familiar');
   state.tasks.unshift(task);
+  const created = bumpAchievementCounter('tasksCreated');
+  if (created >= 3) unlockAchievement('nest-builder');
   checkBoardAchievements();
   saveAndRender();
   form.reset();
   noteInput.value = '';
 });
 
-searchInput.addEventListener('input', render);
+searchInput.addEventListener('input', () => {
+  if (searchInput.value.trim().length >= 2) unlockAchievement('search-lantern');
+  render();
+});
 
 document.querySelectorAll('.filter').forEach(button => {
   button.addEventListener('click', () => {
@@ -72,6 +84,11 @@ document.querySelectorAll('.filter').forEach(button => {
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
+    const views = achievementState.counters.viewsSeen || {};
+    views[tab.dataset.view] = true;
+    achievementState.counters.viewsSeen = views;
+    saveAchievementState();
+    if (Object.keys(views).length >= 3) unlockAchievement('view-shifter');
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'));
@@ -94,6 +111,8 @@ editForm?.addEventListener('submit', event => {
   task.due = document.querySelector('#editDue').value;
   task.note = document.querySelector('#editNote').value.trim();
   task.updatedAt = new Date().toISOString();
+  if (task.due) unlockAchievement('deadline-sigil');
+  if (task.note) unlockAchievement('footnote-familiar');
   unlockAchievement('scribe');
   editDialog.close();
   saveAndRender();
@@ -101,6 +120,7 @@ editForm?.addEventListener('submit', event => {
 
 document.querySelector('#resetBtn').addEventListener('click', () => {
   if (!confirm('Очистить все задачи? Это локальное действие, но всё равно неприятно.')) return;
+  if (state.tasks.length) unlockAchievement('phoenix-dust');
   state = { tasks: [] };
   saveAndRender();
 });
@@ -112,6 +132,7 @@ document.querySelector('#exportBtn').addEventListener('click', () => {
   link.download = `raven-task-board-${new Date().toISOString().slice(0,10)}.json`;
   link.click();
   URL.revokeObjectURL(link.href);
+  unlockAchievement('json-carrier');
 });
 
 
@@ -139,6 +160,7 @@ document.querySelector('#importFile').addEventListener('change', async event => 
   const imported = JSON.parse(await file.text());
   if (!Array.isArray(imported.tasks)) throw new Error('Неверный формат файла');
   state = imported;
+  unlockAchievement('mirror-ritual');
   saveAndRender();
 });
 
@@ -157,6 +179,19 @@ const achievementCatalog = [
   { id: 'obsidian-rune', icon: '💎', title: 'Обсидиановая руна', text: 'Доска заговорила Markdown-ом.' },
   { id: 'poke-the-bird', icon: '👀', title: 'Не тыкай ворона', text: 'Ладно, тыкай. Ему нравится.' },
   { id: 'bird-friend', icon: '🖤', title: 'Свой человек', text: 'Ворон уже узнаёт руку.' },
+  { id: 'nest-builder', icon: '🪹', title: 'Гнездостроительница', text: 'План начал обрастать веточками.' },
+  { id: 'quadrant-oracle', icon: '🧭', title: 'Оракул квадрантов', text: 'Все стороны доски получили смысл.' },
+  { id: 'all-realms', icon: '🗺️', title: 'Четыре королевства', text: 'Гнездо увидело все области жизни.' },
+  { id: 'deadline-sigil', icon: '📅', title: 'Печать срока', text: 'Дата поставлена. Судьба предупреждена.' },
+  { id: 'footnote-familiar', icon: '📜', title: 'Полевые заметки', text: 'У задачи появился шёпот на полях.' },
+  { id: 'search-lantern', icon: '🔎', title: 'Фонарь в тумане', text: 'Что-то было найдено до того, как потерялось.' },
+  { id: 'view-shifter', icon: '🪄', title: 'Смена формы', text: 'Доска повернулась другой гранью.' },
+  { id: 'migration-raven', icon: '🪽', title: 'Перелёт', text: 'Задача сменила ветку без паники.' },
+  { id: 'priority-alchemy', icon: '⚗️', title: 'Алхимия важности', text: 'Приоритеты переплавлены вручную.' },
+  { id: 'archive-keeper', icon: '🗝️', title: 'Ключница архива', text: 'Архив уже не просто кладбище задач.' },
+  { id: 'json-carrier', icon: '📦', title: 'Посылка ворона', text: 'Доска упакована для перелёта.' },
+  { id: 'mirror-ritual', icon: '🪞', title: 'Зеркальный ритуал', text: 'Старое состояние вернулось из файла.' },
+  { id: 'phoenix-dust', icon: '🧹', title: 'Пепел феникса', text: 'Иногда чистый лист тоже заклинание.' },
 ];
 
 function loadAchievementState() {
@@ -201,12 +236,17 @@ function checkBoardAchievements() {
   const active = state.tasks.filter(task => !task.done);
   const done = state.tasks.filter(task => task.done);
   const hot = active.filter(task => task.quadrant === 'urgent-important');
+  const usedQuadrants = new Set(state.tasks.map(task => task.quadrant).filter(Boolean));
+  const usedAreas = new Set(state.tasks.map(task => task.area).filter(Boolean));
   if (state.tasks.length >= 1) unlockAchievement('first-feather');
   if (done.length >= 1) unlockAchievement('clean-cut');
   if (done.length >= 5) unlockAchievement('small-hunt');
   if (done.length >= 10) unlockAchievement('raven-streak');
   if (hot.length >= 3) unlockAchievement('firekeeper');
   if (active.length > 0 && hot.length === 0) unlockAchievement('quiet-sky');
+  if (usedQuadrants.size >= Object.keys(quadrants).length) unlockAchievement('quadrant-oracle');
+  if (usedAreas.size >= areas.length) unlockAchievement('all-realms');
+  if (done.length >= 3) unlockAchievement('archive-keeper');
 }
 
 const ravenLines = [
@@ -216,6 +256,10 @@ const ravenLines = [
   'Срочное видишь? Я тоже вижу. Кар.',
   'Я не прокрастинация. Я моральная поддержка.',
   'Порядок в задачах — порядок в гнезде.',
+  'Я всё записал. Не благодари, просто не теряй список.',
+  'Если задача шипит — значит, её пора приручать.',
+  'Гнездо не резиновое, но я пока держу конструкцию.',
+  'Карточки двигаются. Хаос нервничает.',
 ];
 const ravenActions = ['peck', 'flap', 'side-eye'];
 
@@ -230,12 +274,10 @@ document.querySelector('#perchRaven')?.addEventListener('click', () => {
   const pokes = bumpAchievementCounter('ravenPokes');
   unlockAchievement('poke-the-bird');
   if (pokes >= 7) unlockAchievement('bird-friend');
-  const oldMood = mood.textContent;
-  mood.textContent = ravenLines[Math.floor(Math.random() * ravenLines.length)];
+  holdRavenMood(ravenLines[Math.floor(Math.random() * ravenLines.length)]);
   setTimeout(() => {
     perch.classList.remove(action);
-    updateRavenMood();
-  }, 4200);
+  }, 900);
 });
 
 
@@ -407,9 +449,26 @@ function renderTodayPanel() {
   });
 }
 
-function updateRavenMood() {
+function holdRavenMood(text, durationMs = randomRavenLineDuration()) {
   const mood = document.querySelector('#ravenMood');
   if (!mood) return;
+  clearTimeout(ravenMoodTimer);
+  ravenMoodHoldUntil = Date.now() + durationMs;
+  mood.textContent = text;
+  ravenMoodTimer = setTimeout(() => {
+    ravenMoodHoldUntil = 0;
+    updateRavenMood({ force: true });
+  }, durationMs);
+}
+
+function randomRavenLineDuration() {
+  return RAVEN_LINE_MIN_MS + Math.floor(Math.random() * (RAVEN_LINE_MAX_MS - RAVEN_LINE_MIN_MS + 1));
+}
+
+function updateRavenMood(options = {}) {
+  const mood = document.querySelector('#ravenMood');
+  if (!mood) return;
+  if (!options.force && Date.now() < ravenMoodHoldUntil) return;
   const active = state.tasks.filter(task => !task.done).length;
   const hot = state.tasks.filter(task => !task.done && task.quadrant === 'urgent-important').length;
   if (!active) mood.textContent = 'Пусто. Подозрительно, но прекрасно.';
@@ -553,9 +612,7 @@ function celebrateTask(card) {
     perch.classList.add('celebrate');
   }
   if (mood) {
-    const oldMood = mood.textContent;
-    mood.textContent = 'Задача закрыта. Кар-р-расивая работа.';
-    setTimeout(() => { mood.textContent = oldMood || 'Смотрю, как задачи текут.'; }, 4200);
+    holdRavenMood('Задача закрыта. Кар-р-расивая работа.', 5000);
   }
 
   for (let i = 0; i < 28; i += 1) {
@@ -579,7 +636,11 @@ function wireDropzone(zone, applyChange) {
     event.preventDefault();
     const task = state.tasks.find(item => item.id === draggedId);
     if (!task) return;
+    const oldArea = task.area;
+    const oldQuadrant = task.quadrant;
     applyChange(task);
+    if (task.area !== oldArea) unlockAchievement('migration-raven');
+    if (task.quadrant !== oldQuadrant) unlockAchievement('priority-alchemy');
     saveAndRender();
   });
 }
