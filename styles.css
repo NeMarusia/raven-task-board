@@ -254,3 +254,42 @@ button, .file-label {
   25% { transform: translateX(-8px) rotate(-7deg) scale(1.04); }
   65% { transform: translateX(8px) rotate(7deg) scale(1.04); }
 }
+
+
+.achievement-shelf {
+  position: fixed;
+  left: clamp(14px, 3vw, 34px);
+  bottom: 18px;
+  z-index: 120;
+  display: grid;
+  gap: 10px;
+  width: min(360px, calc(100vw - 28px));
+  pointer-events: none;
+}
+.achievement-toast {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 13px 14px;
+  border: 1px solid rgba(167,139,250,.34);
+  border-radius: 18px;
+  background: rgba(18,16,26,.9);
+  color: var(--text);
+  box-shadow: var(--shadow), 0 0 30px rgba(167,139,250,.18);
+  backdrop-filter: blur(12px);
+  animation: achievement-in 520ms cubic-bezier(.16,.84,.21,1), achievement-out 520ms ease-in 5.8s forwards;
+}
+.achievement-icon { font-size: 28px; filter: drop-shadow(0 8px 14px rgba(0,0,0,.4)); }
+.achievement-toast strong { display: block; margin-bottom: 3px; }
+.achievement-toast span { display: block; color: var(--muted); font-size: 13px; line-height: 1.35; }
+@keyframes achievement-in {
+  from { opacity: 0; transform: translateY(18px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes achievement-out {
+  to { opacity: 0; transform: translateY(18px) scale(.96); }
+}
+@media (max-width: 760px) {
+  .achievement-shelf { bottom: 10px; left: 10px; width: min(320px, calc(100vw - 20px)); }
+}

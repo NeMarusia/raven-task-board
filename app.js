@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'raven-task-board:v1';
+const ACHIEVEMENTS_KEY = 'raven-task-board:achievements:v1';
 
 const areas = [
   { id: 'work', title: 'Работа' },
@@ -18,6 +19,7 @@ let state = { tasks: [] };
 let draggedId = null;
 let activeFilter = 'all';
 let editingTaskId = null;
+let achievementState = loadAchievementState();
 
 const areaSelect = document.querySelector('#taskArea');
 const form = document.querySelector('#taskForm');
@@ -50,6 +52,7 @@ form.addEventListener('submit', event => {
     done: false,
   };
   state.tasks.unshift(task);
+  checkBoardAchievements();
   saveAndRender();
   form.reset();
   noteInput.value = '';
@@ -60,6 +63,7 @@ searchInput.addEventListener('input', render);
 document.querySelectorAll('.filter').forEach(button => {
   button.addEventListener('click', () => {
     activeFilter = button.dataset.filter;
+    if (activeFilter !== 'all') unlockAchievement('time-witch');
     document.querySelectorAll('.filter').forEach(item => item.classList.remove('active'));
     button.classList.add('active');
     render();
@@ -90,6 +94,7 @@ editForm?.addEventListener('submit', event => {
   task.due = document.querySelector('#editDue').value;
   task.note = document.querySelector('#editNote').value.trim();
   task.updatedAt = new Date().toISOString();
+  unlockAchievement('scribe');
   editDialog.close();
   saveAndRender();
 });
@@ -115,6 +120,7 @@ document.querySelector('#markdownBtn').addEventListener('click', async () => {
   const markdown = toMarkdown();
   try {
     await navigator.clipboard.writeText(markdown);
+    unlockAchievement('obsidian-rune');
     alert('Markdown скопирован в буфер. Можно вставлять в Obsidian.');
   } catch {
     const blob = new Blob([markdown], { type: 'text/markdown' });
@@ -123,6 +129,7 @@ document.querySelector('#markdownBtn').addEventListener('click', async () => {
     link.download = `Воронья доска задач — ${new Date().toISOString().slice(0,10)}.md`;
     link.click();
     URL.revokeObjectURL(link.href);
+    unlockAchievement('obsidian-rune');
   }
 });
 
@@ -135,6 +142,72 @@ document.querySelector('#importFile').addEventListener('change', async event => 
   saveAndRender();
 });
 
+
+
+const achievementCatalog = [
+  { id: 'first-feather', icon: '🪶', title: 'Первое перо', text: 'Задача попала в гнездо.' },
+  { id: 'clean-cut', icon: '✅', title: 'Чистый клюв', text: 'Первая задача закрыта.' },
+  { id: 'small-hunt', icon: '🐦‍⬛', title: 'Малая охота', text: 'Несколько задач уже не вернутся прежними.' },
+  { id: 'raven-streak', icon: '🌌', title: 'Воронья серия', text: 'Закрытия пошли стаей.' },
+  { id: 'firekeeper', icon: '🔥', title: 'Хранительница пожаров', text: 'Горящее стало заметным.' },
+  { id: 'quiet-sky', icon: '🌙', title: 'Тихое небо', text: 'На доске стало спокойнее.' },
+  { id: 'time-witch', icon: '⏳', title: 'Ведьма дедлайнов', text: 'Фокус времени пойман.' },
+  { id: 'second-thought', icon: '↩️', title: 'Второй шанс', text: 'Задача вернулась из архива.' },
+  { id: 'scribe', icon: '✍️', title: 'Писарь гнезда', text: 'Задача была переписана без жертв.' },
+  { id: 'obsidian-rune', icon: '💎', title: 'Обсидиановая руна', text: 'Доска заговорила Markdown-ом.' },
+  { id: 'poke-the-bird', icon: '👀', title: 'Не тыкай ворона', text: 'Ладно, тыкай. Ему нравится.' },
+  { id: 'bird-friend', icon: '🖤', title: 'Свой человек', text: 'Ворон уже узнаёт руку.' },
+];
+
+function loadAchievementState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY) || '{}');
+    return { unlocked: saved.unlocked || {}, counters: saved.counters || {} };
+  } catch {
+    return { unlocked: {}, counters: {} };
+  }
+}
+
+function saveAchievementState() {
+  localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(achievementState));
+}
+
+function bumpAchievementCounter(name, amount = 1) {
+  achievementState.counters[name] = (achievementState.counters[name] || 0) + amount;
+  saveAchievementState();
+  return achievementState.counters[name];
+}
+
+function unlockAchievement(id) {
+  if (achievementState.unlocked[id]) return;
+  const item = achievementCatalog.find(entry => entry.id === id);
+  if (!item) return;
+  achievementState.unlocked[id] = new Date().toISOString();
+  saveAchievementState();
+  showAchievement(item);
+}
+
+function showAchievement(item) {
+  const shelf = document.querySelector('#achievementShelf');
+  if (!shelf) return;
+  const toast = document.createElement('div');
+  toast.className = 'achievement-toast';
+  toast.innerHTML = `<div class="achievement-icon">${item.icon}</div><div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.text)}</span></div>`;
+  shelf.append(toast);
+  setTimeout(() => toast.remove(), 6600);
+}
+
+function checkBoardAchievements() {
+  const active = state.tasks.filter(task => !task.done);
+  const done = state.tasks.filter(task => task.done);
+  const hot = active.filter(task => task.quadrant === 'urgent-important');
+  if (state.tasks.length >= 1) unlockAchievement('first-feather');
+  if (done.length >= 1) unlockAchievement('clean-cut');
+  if (done.length >= 5) unlockAchievement('small-hunt');
+  if (done.length >= 10) unlockAchievement('raven-streak');
+  if (hot.length >= 3) unlockAchievement('firekeeper');
+  if (active.length > 0 && hot.length === 0) unlockAchievement('quiet-sky');
+}
 
 const ravenLines = [
   'Кар. Я наблюдаю.',
@@ -154,12 +227,15 @@ document.querySelector('#perchRaven')?.addEventListener('click', () => {
   perch.classList.remove(...ravenActions);
   void perch.offsetWidth;
   perch.classList.add(action);
+  const pokes = bumpAchievementCounter('ravenPokes');
+  unlockAchievement('poke-the-bird');
+  if (pokes >= 7) unlockAchievement('bird-friend');
   const oldMood = mood.textContent;
   mood.textContent = ravenLines[Math.floor(Math.random() * ravenLines.length)];
   setTimeout(() => {
     perch.classList.remove(action);
     updateRavenMood();
-  }, 1800);
+  }, 4200);
 });
 
 
@@ -275,6 +351,7 @@ async function init() {
   state = await loadState();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   render();
+  checkBoardAchievements();
 }
 
 
@@ -448,8 +525,12 @@ function setTaskDone(task, done, card) {
   const wasDone = Boolean(task.done);
   task.done = done;
   if (done && !task.doneAt) task.doneAt = new Date().toISOString();
-  if (!done) delete task.doneAt;
+  if (!done) {
+    delete task.doneAt;
+    if (wasDone) unlockAchievement('second-thought');
+  }
   if (done && !wasDone) celebrateTask(card);
+  checkBoardAchievements();
   saveAndRender();
 }
 
@@ -474,7 +555,7 @@ function celebrateTask(card) {
   if (mood) {
     const oldMood = mood.textContent;
     mood.textContent = 'Задача закрыта. Кар-р-расивая работа.';
-    setTimeout(() => { mood.textContent = oldMood || 'Смотрю, как задачи текут.'; }, 2200);
+    setTimeout(() => { mood.textContent = oldMood || 'Смотрю, как задачи текут.'; }, 4200);
   }
 
   for (let i = 0; i < 28; i += 1) {
