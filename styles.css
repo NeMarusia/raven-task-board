@@ -530,3 +530,27 @@ button, .file-label {
   border-color: rgba(249,115,22,.52);
   box-shadow: 0 22px 46px rgba(0,0,0,.36), 0 0 26px rgba(249,115,22,.14);
 }
+
+.companion-preview::after {
+  content: '';
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(167,139,250,.05), rgba(167,139,250,.8), rgba(249,115,22,.5));
+  box-shadow: 0 10px 24px rgba(0,0,0,.42), 0 0 20px rgba(167,139,250,.2);
+}
+.companion-preview[data-perch="moon"]::after {
+  background: linear-gradient(90deg, rgba(191,219,254,.08), rgba(191,219,254,.9), rgba(167,139,250,.55));
+  box-shadow: 0 10px 24px rgba(0,0,0,.42), 0 0 24px rgba(191,219,254,.3);
+}
+.companion-preview[data-perch="crystal"]::after {
+  background: linear-gradient(90deg, rgba(103,232,249,.12), rgba(103,232,249,.9), rgba(167,139,250,.7));
+  box-shadow: 0 10px 24px rgba(0,0,0,.42), 0 0 26px rgba(103,232,249,.38);
+}
+.companion-preview[data-perch="fire"]::after {
+  background: linear-gradient(90deg, rgba(251,113,133,.18), rgba(249,115,22,.95), rgba(253,224,71,.62));
+  box-shadow: 0 10px 24px rgba(0,0,0,.42), 0 0 28px rgba(249,115,22,.4);
+}
