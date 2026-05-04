@@ -1268,3 +1268,110 @@ body.parrot-mode .today-stat:nth-child(2) strong,
 body.parrot-mode .progress-grid div:nth-child(2) strong { color: #c2410c; }
 body.parrot-mode .today-stat:nth-child(3) strong,
 body.parrot-mode .progress-grid div:nth-child(3) strong { color: #7c3aed; }
+
+/* Light theme modals: achievements shelf and familiar should not open a portal to the basement. */
+body.parrot-mode .achievements-dialog,
+body.parrot-mode .companion-dialog,
+body.parrot-mode .edit-dialog {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(220,252,231,.58), transparent 30%),
+    radial-gradient(circle at 88% 8%, rgba(224,242,254,.62), transparent 32%),
+    linear-gradient(135deg, rgba(255,255,255,.98), rgba(255,250,240,.94));
+  color: #24180c;
+  border-color: rgba(20,184,166,.22);
+  box-shadow: 0 28px 80px rgba(92,64,36,.22), inset 0 0 0 1px rgba(255,255,255,.78);
+}
+body.parrot-mode .achievements-dialog::backdrop,
+body.parrot-mode .companion-dialog::backdrop,
+body.parrot-mode .edit-dialog::backdrop {
+  background: rgba(35,49,38,.34);
+  backdrop-filter: blur(10px) saturate(1.08);
+}
+body.parrot-mode .achievements-card,
+body.parrot-mode .companion-card {
+  color: #24180c;
+}
+body.parrot-mode .achievements-card h2,
+body.parrot-mode .companion-card h2,
+body.parrot-mode .edit-dialog h2 {
+  color: #24180c;
+  text-shadow: 0 1px 0 rgba(255,255,255,.75);
+}
+body.parrot-mode .achievement-summary,
+body.parrot-mode .companion-summary,
+body.parrot-mode .companion-stats span,
+body.parrot-mode .trophy-bird span,
+body.parrot-mode .trophy-bird time,
+body.parrot-mode .cosmetic-card span {
+  color: #6b4f34;
+}
+body.parrot-mode .achievement-tree,
+body.parrot-mode .cosmetic-grid,
+body.parrot-mode .companion-stage {
+  border-color: rgba(20,184,166,.18);
+}
+body.parrot-mode .achievement-tree {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(34,197,94,.16), transparent 30%),
+    linear-gradient(135deg, rgba(255,255,255,.78), rgba(236,253,245,.58) 55%, rgba(224,242,254,.48));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.58);
+}
+body.parrot-mode .achievement-tree::before {
+  background: linear-gradient(180deg, rgba(20,184,166,.52), rgba(249,115,22,.26), rgba(168,85,247,.24));
+  opacity: .48;
+}
+body.parrot-mode .trophy-bird,
+body.parrot-mode .cosmetic-card,
+body.parrot-mode .companion-stats div {
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(240,253,250,.72) 54%, rgba(255,247,237,.76));
+  color: #24180c;
+  border-color: rgba(20,184,166,.18);
+  box-shadow: 0 12px 26px rgba(92,64,36,.10), inset 0 0 0 1px rgba(255,255,255,.66);
+}
+body.parrot-mode .trophy-bird:nth-child(3n + 1),
+body.parrot-mode .cosmetic-card:nth-child(3n + 1) {
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,247,237,.80) 52%, rgba(254,243,199,.68));
+}
+body.parrot-mode .trophy-bird:nth-child(3n + 2),
+body.parrot-mode .cosmetic-card:nth-child(3n + 2) {
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(236,253,245,.78) 52%, rgba(207,250,254,.62));
+}
+body.parrot-mode .trophy-bird:nth-child(3n + 3),
+body.parrot-mode .cosmetic-card:nth-child(3n + 3) {
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(250,245,255,.78) 52%, rgba(252,231,243,.62));
+}
+body.parrot-mode .trophy-bird strong,
+body.parrot-mode .cosmetic-card strong {
+  color: #24180c;
+}
+body.parrot-mode .trophy-bird .trophy-raven,
+body.parrot-mode .companion-preview {
+  filter: drop-shadow(0 12px 18px rgba(92,64,36,.22));
+}
+body.parrot-mode .trophy-bird.mystery,
+body.parrot-mode .cosmetic-card.locked {
+  opacity: .64;
+  filter: grayscale(.45) saturate(.78);
+  background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(229,231,235,.42));
+}
+body.parrot-mode .companion-preview {
+  background:
+    radial-gradient(circle at 50% 34%, rgba(34,197,94,.20), transparent 40%),
+    radial-gradient(circle at 70% 12%, rgba(14,165,233,.18), transparent 34%),
+    linear-gradient(135deg, rgba(255,255,255,.88), rgba(254,243,199,.58));
+  border-color: rgba(20,184,166,.22);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.68), 0 16px 30px rgba(92,64,36,.10);
+}
+body.parrot-mode .cosmetic-card.equipped {
+  border-color: rgba(34,197,94,.50);
+  box-shadow: 0 0 0 3px rgba(34,197,94,.12), 0 16px 30px rgba(34,197,94,.12);
+}
+body.parrot-mode .personality-picker {
+  color: #6b4f34;
+}
+body.parrot-mode .achievements-head .ghost,
+body.parrot-mode .companion-head .ghost {
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,247,237,.82));
+  color: #4a351f;
+  border-color: rgba(92,64,36,.18);
+}
