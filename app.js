@@ -34,7 +34,7 @@ areas.forEach(area => {
 form.addEventListener('submit', event => {
   event.preventDefault();
   const task = {
-    id: crypto.randomUUID(),
+    id: makeId(),
     title: document.querySelector('#taskTitle').value.trim(),
     area: document.querySelector('#taskArea').value,
     quadrant: document.querySelector('#taskQuadrant').value,
@@ -103,6 +103,17 @@ document.querySelector('#importFile').addEventListener('change', async event => 
 });
 
 
+
+function makeId() {
+  if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  if (globalThis.crypto?.getRandomValues) {
+    crypto.getRandomValues(bytes);
+    return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+  return `task-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 function toMarkdown() {
   const lines = [];
   lines.push(`# Воронья доска задач — ${new Date().toLocaleDateString('ru-RU')}`);
@@ -168,7 +179,7 @@ function demoState() {
   return {
     tasks: [
       {
-        id: crypto.randomUUID(),
+        id: makeId(),
         title: 'Пример: заказать листовки / проверить макет',
         area: 'work',
         quadrant: 'urgent-important',
