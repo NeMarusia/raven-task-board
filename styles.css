@@ -504,3 +504,29 @@ button, .file-label {
   .companion-stage { grid-template-columns: 1fr; }
   .companion-stats { grid-template-columns: 1fr; }
 }
+
+.dropzone {
+  transition: background .18s ease, outline-color .18s ease, transform .18s ease;
+}
+.dropzone.drag-over {
+  outline: 2px dashed rgba(167,139,250,.46);
+  outline-offset: 6px;
+  background: rgba(167,139,250,.055);
+  border-radius: 18px;
+}
+.task-card {
+  cursor: grab;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, opacity .16s ease;
+}
+.task-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(167,139,250,.26);
+  box-shadow: 0 16px 34px rgba(0,0,0,.22);
+}
+.task-card.dragging {
+  cursor: grabbing;
+  opacity: .82;
+  transform: rotate(-1.4deg) scale(1.025);
+  border-color: rgba(249,115,22,.52);
+  box-shadow: 0 22px 46px rgba(0,0,0,.36), 0 0 26px rgba(249,115,22,.14);
+}

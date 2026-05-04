@@ -18,6 +18,7 @@ const quadrants = {
 
 let state = { tasks: [] };
 let draggedId = null;
+let draggedCard = null;
 let activeFilter = 'all';
 let editingTaskId = null;
 let achievementState = loadAchievementState();
@@ -785,13 +786,18 @@ function taskCard(task, options = {}) {
   note.textContent = task.note;
   note.hidden = !task.note;
 
-  card.addEventListener('dragstart', () => {
+  card.addEventListener('dragstart', event => {
     draggedId = task.id;
+    draggedCard = card;
     card.classList.add('dragging');
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', task.id);
   });
   card.addEventListener('dragend', () => {
     draggedId = null;
+    draggedCard = null;
     card.classList.remove('dragging');
+    document.querySelectorAll('.dropzone.drag-over').forEach(zone => zone.classList.remove('drag-over'));
   });
 
   const editBtn = card.querySelector('.edit');
@@ -869,19 +875,70 @@ function celebrateTask(card) {
 }
 
 function wireDropzone(zone, applyChange) {
-  zone.addEventListener('dragover', event => event.preventDefault());
+  zone.addEventListener('dragenter', () => {
+    if (draggedId) zone.classList.add('drag-over');
+  });
+  zone.addEventListener('dragover', event => {
+    event.preventDefault();
+    if (!draggedCard) return;
+    const afterElement = getDragAfterElement(zone, event.clientY);
+    const emptyNode = zone.querySelector('.empty');
+    if (emptyNode) emptyNode.remove();
+    if (afterElement == null) zone.appendChild(draggedCard);
+    else zone.insertBefore(draggedCard, afterElement);
+  });
+  zone.addEventListener('dragleave', event => {
+    if (!zone.contains(event.relatedTarget)) zone.classList.remove('drag-over');
+  });
   zone.addEventListener('drop', event => {
     event.preventDefault();
+    zone.classList.remove('drag-over');
     const task = state.tasks.find(item => item.id === draggedId);
     if (!task) return;
     const oldArea = task.area;
     const oldQuadrant = task.quadrant;
+    const orderedIds = [...zone.querySelectorAll('.task-card')].map(card => card.dataset.id);
     applyChange(task);
+    moveTaskByDropOrder(task.id, orderedIds);
     trackRavenActivity('click', 5);
     if (task.area !== oldArea) unlockAchievement('migration-raven');
     if (task.quadrant !== oldQuadrant) unlockAchievement('priority-alchemy');
+    holdRavenMood('Карточка перелетела. Почти как настоящая доска, только без стикеров под столом.', 4800);
     saveAndRender();
   });
+}
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.task-card:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) return { offset, element: child };
+    return closest;
+  }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+}
+
+function moveTaskByDropOrder(taskId, orderedIds) {
+  const current = state.tasks.find(task => task.id === taskId);
+  if (!current) return;
+  const prevId = orderedIds[orderedIds.indexOf(taskId) - 1];
+  const nextId = orderedIds[orderedIds.indexOf(taskId) + 1];
+  state.tasks = state.tasks.filter(task => task.id !== taskId);
+  if (nextId) {
+    const nextIndex = state.tasks.findIndex(task => task.id === nextId);
+    if (nextIndex >= 0) {
+      state.tasks.splice(nextIndex, 0, current);
+      return;
+    }
+  }
+  if (prevId) {
+    const prevIndex = state.tasks.findIndex(task => task.id === prevId);
+    if (prevIndex >= 0) {
+      state.tasks.splice(prevIndex + 1, 0, current);
+      return;
+    }
+  }
+  state.tasks.unshift(current);
 }
 
 function empty(text) {
