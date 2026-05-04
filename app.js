@@ -14,7 +14,7 @@ const quadrants = {
   'not-urgent-not-important': '🪶 Не срочно + неважно',
 };
 
-let state = loadState();
+let state = { tasks: [] };
 let draggedId = null;
 
 const areaSelect = document.querySelector('#taskArea');
@@ -132,9 +132,39 @@ function escapeMd(text) {
   return String(text).replace(/\|/g, '\\|');
 }
 
-function loadState() {
+async function loadState() {
+  const local = loadLocalState();
+  try {
+    const response = await fetch('/api/tasks', { headers: { accept: 'application/json' } });
+    if (!response.ok) throw new Error(`API ${response.status}`);
+    const data = await response.json();
+    const remote = data.state && Array.isArray(data.state.tasks) ? data.state : null;
+    if (remote && remote.tasks.length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
+      return remote;
+    }
+    if (local.tasks.length) {
+      await saveRemoteState(local);
+      return local;
+    }
+  } catch (error) {
+    console.warn('Obsidian sync unavailable, using browser storage:', error);
+  }
+  return local.tasks.length ? local : demoState();
+}
+
+function loadLocalState() {
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) return JSON.parse(saved);
+  if (!saved) return { tasks: [] };
+  try {
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed.tasks) ? parsed : { tasks: [] };
+  } catch {
+    return { tasks: [] };
+  }
+}
+
+function demoState() {
   return {
     tasks: [
       {
@@ -151,10 +181,30 @@ function loadState() {
   };
 }
 
+let syncTimer = null;
 function saveAndRender() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   render();
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => saveRemoteState(state), 250);
 }
+
+async function saveRemoteState(nextState) {
+  const response = await fetch('/api/tasks', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ state: nextState }),
+  });
+  if (!response.ok) throw new Error(`API ${response.status}`);
+  return response.json();
+}
+
+async function init() {
+  state = await loadState();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  render();
+}
+
 
 function filteredTasks() {
   const query = searchInput.value.trim().toLowerCase();
@@ -287,4 +337,4 @@ function urgencyRank(task) {
   }[task.quadrant] ?? 9;
 }
 
-render();
+init();
