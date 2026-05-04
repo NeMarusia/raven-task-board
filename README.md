@@ -52,7 +52,11 @@
 
 ### Вариант 2: локальный сервер + Obsidian sync
 
+Backend по умолчанию закрыт HTTP Basic Auth. Перед запуском задайте логин и пароль через переменные окружения:
+
 ```bash
+RAVEN_AUTH_USER="your-login" \
+RAVEN_AUTH_PASSWORD="your-long-random-password" \
 node server.js
 ```
 
@@ -61,6 +65,14 @@ node server.js
 ```text
 http://localhost:8099
 ```
+
+Для локальной разработки без авторизации можно явно отключить защиту:
+
+```bash
+RAVEN_REQUIRE_AUTH=false node server.js
+```
+
+Не отключайте `RAVEN_REQUIRE_AUTH` на публичном сервере. Если логин/пароль не заданы, сервер будет отвечать `401 Authentication required`, чтобы случайно не выложить личную доску наружу.
 
 По умолчанию backend пишет состояние сюда:
 
@@ -93,6 +105,8 @@ RAVEN_OBSIDIAN_FILE="/path/to/board.md" node server.js
 ## Важно про приватность
 
 Репозиторий не содержит личный Obsidian-файл с задачами. Реальные задачи создаются локально при запуске backend-режима и не должны попадать в Git.
+
+Для публичного деплоя используйте HTTPS перед сервером: Basic Auth безопасен только поверх TLS. Текущий HTTP Basic Auth — временный защитный слой до нормального OAuth-входа, например через GitHub.
 
 ## Идеи для развития
 

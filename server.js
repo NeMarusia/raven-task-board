@@ -5,6 +5,10 @@ const path = require('node:path');
 const PORT = Number(process.env.PORT || 8099);
 const ROOT = __dirname;
 const OBSIDIAN_FILE = process.env.RAVEN_OBSIDIAN_FILE || '/home/sunrise/Obsidian/данные о владельце/работа/Воронья доска задач.md';
+const AUTH_USER = process.env.RAVEN_AUTH_USER || '';
+const AUTH_PASSWORD = process.env.RAVEN_AUTH_PASSWORD || '';
+const REQUIRE_AUTH = process.env.RAVEN_REQUIRE_AUTH !== 'false';
+const AUTH_REALM = 'Raven Task Board';
 
 const AREAS = {
   work: 'Работа',
@@ -33,6 +37,40 @@ const MIME = {
 function json(res, status, body) {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(body));
+}
+
+function timingSafeEqualText(a, b) {
+  const left = Buffer.from(String(a));
+  const right = Buffer.from(String(b));
+  if (left.length !== right.length) return false;
+  return require('node:crypto').timingSafeEqual(left, right);
+}
+
+function hasValidAuth(req) {
+  if (!REQUIRE_AUTH) return true;
+  if (!AUTH_USER || !AUTH_PASSWORD) return false;
+  const header = req.headers.authorization || '';
+  if (!header.startsWith('Basic ')) return false;
+  let decoded = '';
+  try {
+    decoded = Buffer.from(header.slice(6), 'base64').toString('utf8');
+  } catch {
+    return false;
+  }
+  const separator = decoded.indexOf(':');
+  if (separator < 0) return false;
+  const user = decoded.slice(0, separator);
+  const password = decoded.slice(separator + 1);
+  return timingSafeEqualText(user, AUTH_USER) && timingSafeEqualText(password, AUTH_PASSWORD);
+}
+
+function requestAuth(res) {
+  res.writeHead(401, {
+    'www-authenticate': `Basic realm="${AUTH_REALM}", charset="UTF-8"`,
+    'content-type': 'text/plain; charset=utf-8',
+    'cache-control': 'no-store',
+  });
+  res.end('Authentication required');
 }
 
 async function readBody(req) {
@@ -135,6 +173,8 @@ async function serveStatic(req, res) {
 
 const server = http.createServer(async (req, res) => {
   try {
+    if (!hasValidAuth(req)) return requestAuth(res);
+
     if (req.url === '/api/tasks' && req.method === 'GET') {
       return json(res, 200, { state: await readState(), obsidianFile: OBSIDIAN_FILE });
     }
@@ -153,4 +193,8 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Raven Task Board: http://0.0.0.0:${PORT}`);
   console.log(`Obsidian file: ${OBSIDIAN_FILE}`);
+  console.log(REQUIRE_AUTH ? 'HTTP Basic Auth: enabled' : 'HTTP Basic Auth: disabled');
+  if (REQUIRE_AUTH && (!AUTH_USER || !AUTH_PASSWORD)) {
+    console.warn('WARNING: RAVEN_AUTH_USER/RAVEN_AUTH_PASSWORD are not set; all requests will be rejected.');
+  }
 });
