@@ -1,0 +1,72 @@
+name: Release RTB Desktop
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, for example v0.1.1'
+        required: true
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build release ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            release-platform: macOS-arm64
+          - platform: windows-latest
+            release-platform: Windows-x64
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check JavaScript syntax
+        run: npm run check
+
+      - name: Build desktop bundle
+        run: npm run desktop:build
+
+      - name: Collect release assets
+        run: node scripts/collect-release-assets.mjs
+        env:
+          RTB_RELEASE_VERSION: ${{ github.event.inputs.version || github.ref_name }}
+          RTB_RELEASE_PLATFORM: ${{ matrix.release-platform }}
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtb-${{ matrix.release-platform }}
+          path: release-assets/*
+          if-no-files-found: error
+
+      - name: Attach assets to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          name: Raven Task Board ${{ github.event.inputs.version || github.ref_name }}
+          draft: false
+          prerelease: true
+          generate_release_notes: true
+          files: release-assets/*

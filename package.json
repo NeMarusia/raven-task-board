@@ -7,6 +7,7 @@
     "start": "node server.js",
     "check": "node --check app.js && node --check server.js",
     "build:desktop-assets": "node scripts/build-desktop-assets.mjs",
+    "collect-release-assets": "node scripts/collect-release-assets.mjs",
     "tauri": "tauri",
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build"
