@@ -33,6 +33,8 @@ xattr -dr com.apple.quarantine "/Applications/Raven Task Board.app"
 
 Markdown-файл доски не удаляется и не перезаписывается установщиком.
 
+RTB также делает локальные резервные копии перед перезаписью доски: рядом с файлом появится папка `.rtb-backups`, где хранятся последние версии Markdown-файла.
+
 ## Windows
 
 1. Скачайте Windows installer из Release или GitHub Actions artifact.

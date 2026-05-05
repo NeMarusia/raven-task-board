@@ -3,6 +3,7 @@ use serde_json::{json, Value};
 use std::{
     fs,
     path::{Path, PathBuf},
+    time::{SystemTime, UNIX_EPOCH},
 };
 use tauri::{AppHandle, Manager};
 
@@ -182,12 +183,59 @@ fn state_to_markdown(state: &Value) -> Result<String, String> {
     Ok(lines.join("\n"))
 }
 
+fn backup_existing_board(path: &Path) -> Result<(), String> {
+    if !path.exists() {
+        return Ok(());
+    }
+
+    let Some(parent) = path.parent() else {
+        return Ok(());
+    };
+
+    let backup_dir = parent.join(".rtb-backups");
+    fs::create_dir_all(&backup_dir)
+        .map_err(|err| format!("Cannot create backup directory: {err}"))?;
+
+    let stem = path
+        .file_stem()
+        .and_then(|value| value.to_str())
+        .unwrap_or("board")
+        .replace(['/', '\\'], "-");
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|err| format!("Cannot create backup timestamp: {err}"))?
+        .as_secs();
+    let backup_path = backup_dir.join(format!("{stem}-{timestamp}.md"));
+    fs::copy(path, backup_path).map_err(|err| format!("Cannot backup board file: {err}"))?;
+
+    let prefix = format!("{stem}-");
+    let mut backups: Vec<_> = fs::read_dir(&backup_dir)
+        .map_err(|err| format!("Cannot list board backups: {err}"))?
+        .filter_map(Result::ok)
+        .filter(|entry| {
+            entry
+                .file_name()
+                .to_str()
+                .map(|name| name.starts_with(&prefix) && name.ends_with(".md"))
+                .unwrap_or(false)
+        })
+        .collect();
+    backups.sort_by_key(|entry| entry.metadata().and_then(|meta| meta.modified()).ok());
+    while backups.len() > 20 {
+        let entry = backups.remove(0);
+        let _ = fs::remove_file(entry.path());
+    }
+
+    Ok(())
+}
+
 fn write_state_to_markdown(path: &Path, state: &Value) -> Result<(), String> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)
             .map_err(|err| format!("Cannot create board directory: {err}"))?;
     }
     let text = state_to_markdown(state)?;
+    backup_existing_board(path)?;
     fs::write(path, text).map_err(|err| format!("Cannot write board file: {err}"))
 }
 
