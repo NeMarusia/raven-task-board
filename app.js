@@ -60,6 +60,7 @@ const focusStop = document.querySelector('#focusStop');
 const openBoardBtn = document.querySelector('#openBoardBtn');
 const createBoardBtn = document.querySelector('#createBoardBtn');
 const desktopBoardStatus = document.querySelector('#desktopBoardStatus');
+const saveStatus = document.querySelector('#saveStatus');
 
 // HTML already contains fallback options so the select is never an empty Chrome goblin.
 areaSelect.innerHTML = '';
@@ -488,6 +489,7 @@ openBoardBtn?.addEventListener('click', async () => {
     state = selected;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     await refreshDesktopStatus();
+    setSaveStatus('saved', 'Файл открыт');
     unlockAchievement('mirror-ritual');
     saveAndRender();
   } catch (error) {
@@ -503,6 +505,7 @@ createBoardBtn?.addEventListener('click', async () => {
     desktopBoardPath = path;
     renderDesktopControls();
     await saveDesktopState(state);
+    setSaveStatus('saved', 'Файл создан');
     unlockAchievement('obsidian-rune');
   } catch (error) {
     alert(`Не получилось создать доску: ${error}`);
@@ -747,6 +750,19 @@ function renderDesktopControls() {
   desktopBoardStatus.title = desktopBoardPath || 'Выбери или создай Markdown-файл доски';
 }
 
+function setSaveStatus(kind = 'local', text = 'Локально') {
+  if (!saveStatus) return;
+  saveStatus.classList.remove('saving', 'saved', 'local', 'error');
+  saveStatus.classList.add(kind);
+  saveStatus.textContent = text;
+  saveStatus.title = text;
+}
+
+function savedLabel() {
+  if (desktopApi && desktopBoardPath) return `Сохранено ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
+  return 'Сохранено локально';
+}
+
 function shortPath(path) {
   const parts = String(path).split(/[\\/]/).filter(Boolean);
   if (parts.length <= 2) return String(path);
@@ -821,8 +837,17 @@ let syncTimer = null;
 function saveAndRender() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   render();
+  setSaveStatus('saving', desktopApi && desktopBoardPath ? 'Сохраняю…' : 'Сохраняю локально…');
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(() => savePersistentState(state), 250);
+  syncTimer = setTimeout(async () => {
+    try {
+      await savePersistentState(state);
+      setSaveStatus(desktopApi && desktopBoardPath ? 'saved' : 'local', savedLabel());
+    } catch (error) {
+      console.warn('Persistent save unavailable, browser copy is safe:', error);
+      setSaveStatus(desktopApi ? 'error' : 'local', desktopApi ? 'Ошибка сохранения' : 'Сохранено локально');
+    }
+  }, 250);
 }
 
 async function savePersistentState(nextState) {
@@ -856,6 +881,7 @@ async function init() {
   renderAchievementTree();
   renderCompanion();
   renderProductivity();
+  setSaveStatus(desktopApi && desktopBoardPath ? 'saved' : 'local', desktopApi && desktopBoardPath ? 'Файл подключён' : 'Сохранено локально');
   if (productivityState.focusActiveUntil > Date.now()) tickFocus();
 }
 

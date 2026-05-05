@@ -58,7 +58,8 @@ button, .file-label {
   font-weight: 800;
 }
 .ghost { background: rgba(255,255,255,.08); color: var(--text); border: 1px solid var(--line); }
-.board-status {
+.board-status,
+.save-status {
   max-width: 240px;
   align-self: center;
   padding: 10px 12px;
@@ -71,6 +72,11 @@ button, .file-label {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.save-status { max-width: 180px; }
+.save-status.saving { color: #fde68a; border-color: rgba(251,191,36,.32); }
+.save-status.saved { color: #bbf7d0; border-color: rgba(52,211,153,.30); }
+.save-status.local { color: #ddd6fe; border-color: rgba(167,139,250,.30); }
+.save-status.error { color: #fecdd3; border-color: rgba(251,113,133,.42); }
 .danger { background: rgba(251,113,133,.16); color: #fecdd3; border: 1px solid rgba(251,113,133,.35); }
 .toolbar { display: flex; justify-content: space-between; gap: 14px; align-items: center; margin: 18px 0; }
 .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -1179,7 +1185,8 @@ body.parrot-mode .today-mini {
 /* Parrot-mode unification pass: glassy pastel, readable counters, no black-on-green goblin buttons. */
 body.parrot-mode button,
 body.parrot-mode .file-label,
-body.parrot-mode .board-status {
+body.parrot-mode .board-status,
+body.parrot-mode .save-status {
   color: #244019;
 }
 body.parrot-mode .header-actions > button,
