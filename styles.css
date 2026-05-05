@@ -1375,3 +1375,82 @@ body.parrot-mode .companion-head .ghost {
   color: #4a351f;
   border-color: rgba(92,64,36,.18);
 }
+
+/* Theme-aware wallpapers: dark wallpapers keep their drama in raven-mode,
+   but parrot/light mode gets airy versions so backgrounds and text do not fight. */
+body.parrot-mode[data-wallpaper="stars"] {
+  background:
+    linear-gradient(28deg, transparent 21%, rgba(14,165,233,.18) 21.5%, transparent 22%, transparent 67%, rgba(168,85,247,.14) 67.5%, transparent 68%),
+    radial-gradient(circle at 18% 20%, rgba(14,165,233,.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 31% 32%, rgba(168,85,247,.45) 0 2px, transparent 3px),
+    radial-gradient(circle at 48% 18%, rgba(34,197,94,.38) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 26%, rgba(245,158,11,.38) 0 2px, transparent 3px),
+    radial-gradient(circle at 84% 64%, rgba(14,165,233,.32), transparent 22%),
+    linear-gradient(160deg, #fff7ed 0%, #ecfeff 48%, #f5f3ff 100%);
+}
+body.parrot-mode[data-wallpaper="moon"] {
+  background:
+    radial-gradient(circle at 78% 16%, rgba(251,191,36,.62) 0 46px, rgba(251,191,36,.18) 47px 92px, transparent 93px),
+    radial-gradient(circle at 18% 82%, rgba(167,139,250,.2), transparent 30%),
+    linear-gradient(160deg, #fff7ed, #eef2ff 58%, #e0f2fe);
+}
+body.parrot-mode[data-wallpaper="forest"] {
+  background:
+    repeating-linear-gradient(90deg, rgba(22,163,74,.16) 0 18px, transparent 18px 46px),
+    radial-gradient(circle at 50% 0%, rgba(187,247,208,.38), transparent 38%),
+    linear-gradient(180deg, #f0fdf4, #fff7ed 56%, #dcfce7);
+}
+body.parrot-mode[data-wallpaper="library"] {
+  background:
+    repeating-linear-gradient(90deg, rgba(217,119,6,.12) 0 28px, rgba(120,53,15,.10) 28px 34px, transparent 34px 48px),
+    radial-gradient(circle at 80% 10%, rgba(251,191,36,.24), transparent 30%),
+    linear-gradient(160deg, #fff7ed, #fef3c7 48%, #ffedd5);
+}
+body.parrot-mode[data-wallpaper="aurora"] {
+  background:
+    radial-gradient(ellipse at 38% 0%, rgba(34,197,94,.28), transparent 42%),
+    radial-gradient(ellipse at 72% 8%, rgba(14,165,233,.24), transparent 38%),
+    radial-gradient(ellipse at 22% 22%, rgba(236,72,153,.16), transparent 34%),
+    linear-gradient(180deg, #ecfeff, #f5f3ff 52%, #fff7ed);
+}
+body.parrot-mode[data-wallpaper="palms"] .app-header,
+body.parrot-mode[data-wallpaper="stars"] .app-header,
+body.parrot-mode[data-wallpaper="moon"] .app-header,
+body.parrot-mode[data-wallpaper="forest"] .app-header,
+body.parrot-mode[data-wallpaper="library"] .app-header,
+body.parrot-mode[data-wallpaper="aurora"] .app-header,
+body.parrot-mode[data-wallpaper="mountains"] .app-header,
+body.parrot-mode[data-wallpaper="surf"] .app-header {
+  color: #24180c;
+  text-shadow: none;
+}
+body.parrot-mode[data-wallpaper="palms"] .app-header h1,
+body.parrot-mode[data-wallpaper="stars"] .app-header h1,
+body.parrot-mode[data-wallpaper="moon"] .app-header h1,
+body.parrot-mode[data-wallpaper="forest"] .app-header h1,
+body.parrot-mode[data-wallpaper="library"] .app-header h1,
+body.parrot-mode[data-wallpaper="aurora"] .app-header h1,
+body.parrot-mode[data-wallpaper="mountains"] .app-header h1,
+body.parrot-mode[data-wallpaper="surf"] .app-header h1 {
+  color: #24180c;
+}
+body.parrot-mode[data-wallpaper="palms"] .app-header .subtitle,
+body.parrot-mode[data-wallpaper="stars"] .app-header .subtitle,
+body.parrot-mode[data-wallpaper="moon"] .app-header .subtitle,
+body.parrot-mode[data-wallpaper="forest"] .app-header .subtitle,
+body.parrot-mode[data-wallpaper="library"] .app-header .subtitle,
+body.parrot-mode[data-wallpaper="aurora"] .app-header .subtitle,
+body.parrot-mode[data-wallpaper="mountains"] .app-header .subtitle,
+body.parrot-mode[data-wallpaper="surf"] .app-header .subtitle {
+  color: #5f482f;
+}
+body.parrot-mode[data-wallpaper="palms"] .app-header .eyebrow,
+body.parrot-mode[data-wallpaper="stars"] .app-header .eyebrow,
+body.parrot-mode[data-wallpaper="moon"] .app-header .eyebrow,
+body.parrot-mode[data-wallpaper="forest"] .app-header .eyebrow,
+body.parrot-mode[data-wallpaper="library"] .app-header .eyebrow,
+body.parrot-mode[data-wallpaper="aurora"] .app-header .eyebrow,
+body.parrot-mode[data-wallpaper="mountains"] .app-header .eyebrow,
+body.parrot-mode[data-wallpaper="surf"] .app-header .eyebrow {
+  color: #15803d;
+}
