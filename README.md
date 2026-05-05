@@ -46,6 +46,27 @@
 
 ## Запуск
 
+### Вариант 0: desktop-приложение RTB
+
+В репозитории есть Tauri-обёртка для **Raven Task Board Desktop**.
+
+Локальная разработка:
+
+```bash
+npm install
+npm run desktop:dev
+```
+
+Сборка desktop-пакета:
+
+```bash
+npm run desktop:build
+```
+
+В desktop-режиме можно открыть или создать Markdown-файл доски (`.md`). Приложение сохраняет путь к файлу в локальных настройках и пишет состояние в служебный блок `raven-task-board-json`, совместимый с Obsidian.
+
+Windows/macOS-сборки собираются через GitHub Actions workflow **Build RTB Desktop**.
+
 ### Вариант 1: просто открыть HTML
 
 Можно открыть `index.html` в браузере. В этом режиме данные живут в `localStorage`, backend не нужен.

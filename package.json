@@ -1,0 +1,33 @@
+{
+  "name": "raven-task-board",
+  "version": "0.1.0",
+  "description": "Мини-сайт для личной операционки: канбан по направлениям, матрица Эйзенхауэра, фокус дня, архив выполненных задач и синхронизация с Obsidian.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check app.js && node --check server.js",
+    "build:desktop-assets": "node scripts/build-desktop-assets.mjs",
+    "tauri": "tauri",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NeMarusia/raven-task-board.git"
+  },
+  "keywords": [
+    "kanban",
+    "productivity",
+    "tauri",
+    "obsidian"
+  ],
+  "author": "NeMarusia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NeMarusia/raven-task-board/issues"
+  },
+  "homepage": "https://nemarusia.github.io/raven-task-board/",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.0"
+  }
+}

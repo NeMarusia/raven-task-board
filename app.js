@@ -30,6 +30,8 @@ let ravenHeldMood = '';
 let companionState = loadCompanionState();
 let productivityState = loadProductivityState();
 let focusTimer = null;
+let desktopApi = null;
+let desktopBoardPath = null;
 
 const RAVEN_LINE_MIN_MS = 4200;
 const RAVEN_LINE_MAX_MS = 5600;
@@ -55,6 +57,9 @@ const personalitySelect = document.querySelector('#personalitySelect');
 const themeBtn = document.querySelector('#themeBtn');
 const focusStart = document.querySelector('#focusStart');
 const focusStop = document.querySelector('#focusStop');
+const openBoardBtn = document.querySelector('#openBoardBtn');
+const createBoardBtn = document.querySelector('#createBoardBtn');
+const desktopBoardStatus = document.querySelector('#desktopBoardStatus');
 
 // HTML already contains fallback options so the select is never an empty Chrome goblin.
 areaSelect.innerHTML = '';
@@ -475,6 +480,35 @@ document.querySelector('#importFile').addEventListener('change', async event => 
   saveAndRender();
 });
 
+openBoardBtn?.addEventListener('click', async () => {
+  if (!desktopApi) return;
+  try {
+    const selected = await desktopApi.invoke('choose_board_file');
+    if (!selected) return;
+    state = selected;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    await refreshDesktopStatus();
+    unlockAchievement('mirror-ritual');
+    saveAndRender();
+  } catch (error) {
+    alert(`Не получилось открыть доску: ${error}`);
+  }
+});
+
+createBoardBtn?.addEventListener('click', async () => {
+  if (!desktopApi) return;
+  try {
+    const path = await desktopApi.invoke('create_board_file', { state });
+    if (!path) return;
+    desktopBoardPath = path;
+    renderDesktopControls();
+    await saveDesktopState(state);
+    unlockAchievement('obsidian-rune');
+  } catch (error) {
+    alert(`Не получилось создать доску: ${error}`);
+  }
+});
+
 
 
 const achievementCatalog = [
@@ -682,8 +716,60 @@ function escapeMd(text) {
   return String(text).replace(/\|/g, '\\|');
 }
 
+async function setupDesktopApi() {
+  const invoke = globalThis.__TAURI__?.core?.invoke;
+  if (!invoke) return;
+  desktopApi = { invoke };
+  await refreshDesktopStatus();
+}
+
+async function refreshDesktopStatus() {
+  if (!desktopApi) return;
+  try {
+    const status = await desktopApi.invoke('desktop_status');
+    desktopBoardPath = status?.boardPath || null;
+  } catch (error) {
+    console.warn('RTB desktop status unavailable:', error);
+    desktopApi = null;
+    desktopBoardPath = null;
+  }
+  renderDesktopControls();
+}
+
+function renderDesktopControls() {
+  const enabled = Boolean(desktopApi);
+  [openBoardBtn, createBoardBtn, desktopBoardStatus].forEach(node => node?.classList.toggle('hidden', !enabled));
+  document.body.classList.toggle('desktop-app', enabled);
+  if (!desktopBoardStatus || !enabled) return;
+  desktopBoardStatus.textContent = desktopBoardPath
+    ? `Файл: ${shortPath(desktopBoardPath)}`
+    : 'Demo mode · файл не выбран';
+  desktopBoardStatus.title = desktopBoardPath || 'Выбери или создай Markdown-файл доски';
+}
+
+function shortPath(path) {
+  const parts = String(path).split(/[\\/]/).filter(Boolean);
+  if (parts.length <= 2) return String(path);
+  return `…/${parts.slice(-2).join('/')}`;
+}
+
 async function loadState() {
   const local = loadLocalState();
+  if (desktopApi) {
+    try {
+      const desktopState = await desktopApi.invoke('read_board');
+      if (desktopState && Array.isArray(desktopState.tasks) && desktopState.tasks.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(desktopState));
+        return desktopState;
+      }
+      if (desktopBoardPath && local.tasks.length) {
+        await saveDesktopState(local);
+        return local;
+      }
+    } catch (error) {
+      console.warn('Desktop board sync unavailable, using browser storage:', error);
+    }
+  }
   try {
     const response = await fetch('/api/tasks', { headers: { accept: 'application/json' } });
     if (!response.ok) throw new Error(`API ${response.status}`);
@@ -736,7 +822,17 @@ function saveAndRender() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   render();
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(() => saveRemoteState(state), 250);
+  syncTimer = setTimeout(() => savePersistentState(state), 250);
+}
+
+async function savePersistentState(nextState) {
+  if (desktopApi) return saveDesktopState(nextState);
+  return saveRemoteState(nextState);
+}
+
+async function saveDesktopState(nextState) {
+  if (!desktopApi || !desktopBoardPath) return null;
+  return desktopApi.invoke('save_board', { state: nextState });
 }
 
 async function saveRemoteState(nextState) {
@@ -750,6 +846,7 @@ async function saveRemoteState(nextState) {
 }
 
 async function init() {
+  await setupDesktopApi();
   state = await loadState();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   markVisit();

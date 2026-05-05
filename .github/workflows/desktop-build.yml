@@ -1,0 +1,57 @@
+name: Build RTB Desktop
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'styles.css'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/**'
+      - 'src-tauri/**'
+      - '.github/workflows/desktop-build.yml'
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            artifact-name: rtb-macos
+          - platform: windows-latest
+            artifact-name: rtb-windows
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Check JavaScript syntax
+        run: npm run check
+
+      - name: Build desktop bundle
+        run: npm run desktop:build
+
+      - name: Upload bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: |
+            src-tauri/target/release/bundle/**/*
+          if-no-files-found: error
