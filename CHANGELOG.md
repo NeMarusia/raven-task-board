@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Desktop app now shows its installed RTB version in the header.
+
 ## 0.1.1 — Desktop UX and safer board files
 
 First productized desktop build after the initial Tauri MVP.
