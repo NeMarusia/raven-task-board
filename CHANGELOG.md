@@ -2,9 +2,15 @@
 
 ## Unreleased
 
+## 0.1.2 — Desktop release polish
+
 ### Added
 
 - Desktop app now shows its installed RTB version in the header.
+
+### Changed
+
+- GitHub Actions desktop/release workflows opt into Node 24 for JavaScript actions and rebuild desktop packages when release workflow files change.
 
 ## 0.1.1 — Desktop UX and safer board files
 
