@@ -1,6 +1,6 @@
 [package]
 name = "rtb"
-version = "0.1.0"
+version = "0.1.1"
 description = "Raven Task Board desktop app"
 authors = ["NeMarusia"]
 edition = "2021"
