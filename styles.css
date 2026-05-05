@@ -48,6 +48,12 @@ input, select, textarea {
   padding: 12px 13px;
   outline: none;
 }
+.recent-board-select {
+  max-width: 220px;
+  align-self: center;
+  padding: 10px 12px;
+  font-size: 12px;
+}
 textarea { width: 100%; min-height: 78px; margin-top: 10px; resize: vertical; }
 button, .file-label {
   border: 0;

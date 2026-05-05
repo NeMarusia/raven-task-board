@@ -13,7 +13,10 @@ const DATA_BLOCK_END: &str = "```";
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 struct Settings {
+    #[serde(default)]
     board_path: Option<String>,
+    #[serde(default)]
+    recent_board_paths: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -21,6 +24,7 @@ struct Settings {
 struct DesktopStatus {
     available: bool,
     board_path: Option<String>,
+    recent_board_paths: Vec<String>,
 }
 
 fn settings_path(app: &AppHandle) -> Result<PathBuf, String> {
@@ -46,6 +50,15 @@ fn write_settings(app: &AppHandle, settings: &Settings) -> Result<(), String> {
     let path = settings_path(app)?;
     let text = serde_json::to_string_pretty(settings).map_err(|err| err.to_string())?;
     fs::write(path, text).map_err(|err| format!("Cannot write settings: {err}"))
+}
+
+fn remember_board_path(settings: &mut Settings, board_path: String) {
+    settings.board_path = Some(board_path.clone());
+    settings
+        .recent_board_paths
+        .retain(|path| path != &board_path);
+    settings.recent_board_paths.insert(0, board_path);
+    settings.recent_board_paths.truncate(8);
 }
 
 fn empty_state() -> Value {
@@ -245,6 +258,7 @@ fn desktop_status(app: AppHandle) -> DesktopStatus {
     DesktopStatus {
         available: true,
         board_path: settings.board_path,
+        recent_board_paths: settings.recent_board_paths,
     }
 }
 
@@ -278,13 +292,20 @@ fn choose_board_file(app: AppHandle) -> Result<Option<Value>, String> {
         return Ok(None);
     };
     let state = read_state_from_markdown(&path)?;
-    write_settings(
-        &app,
-        &Settings {
-            board_path: Some(path.to_string_lossy().to_string()),
-        },
-    )?;
+    let mut settings = read_settings(&app);
+    remember_board_path(&mut settings, path.to_string_lossy().to_string());
+    write_settings(&app, &settings)?;
     Ok(Some(state))
+}
+
+#[tauri::command]
+fn open_recent_board_file(app: AppHandle, path: String) -> Result<Value, String> {
+    let board_path = PathBuf::from(&path);
+    let state = read_state_from_markdown(&board_path)?;
+    let mut settings = read_settings(&app);
+    remember_board_path(&mut settings, board_path.to_string_lossy().to_string());
+    write_settings(&app, &settings)?;
+    Ok(state)
 }
 
 #[tauri::command]
@@ -300,12 +321,9 @@ fn create_board_file(app: AppHandle, state: Value) -> Result<Option<String>, Str
     };
     write_state_to_markdown(&path, &state)?;
     let board_path = path.to_string_lossy().to_string();
-    write_settings(
-        &app,
-        &Settings {
-            board_path: Some(board_path.clone()),
-        },
-    )?;
+    let mut settings = read_settings(&app);
+    remember_board_path(&mut settings, board_path.clone());
+    write_settings(&app, &settings)?;
     Ok(Some(board_path))
 }
 
@@ -316,6 +334,7 @@ pub fn run() {
             read_board,
             save_board,
             choose_board_file,
+            open_recent_board_file,
             create_board_file,
         ])
         .run(tauri::generate_context!())

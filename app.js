@@ -32,6 +32,7 @@ let productivityState = loadProductivityState();
 let focusTimer = null;
 let desktopApi = null;
 let desktopBoardPath = null;
+let recentBoardPaths = [];
 
 const RAVEN_LINE_MIN_MS = 4200;
 const RAVEN_LINE_MAX_MS = 5600;
@@ -59,6 +60,7 @@ const focusStart = document.querySelector('#focusStart');
 const focusStop = document.querySelector('#focusStop');
 const openBoardBtn = document.querySelector('#openBoardBtn');
 const createBoardBtn = document.querySelector('#createBoardBtn');
+const recentBoardSelect = document.querySelector('#recentBoardSelect');
 const desktopBoardStatus = document.querySelector('#desktopBoardStatus');
 const saveStatus = document.querySelector('#saveStatus');
 
@@ -503,12 +505,31 @@ createBoardBtn?.addEventListener('click', async () => {
     const path = await desktopApi.invoke('create_board_file', { state });
     if (!path) return;
     desktopBoardPath = path;
-    renderDesktopControls();
+    await refreshDesktopStatus();
     await saveDesktopState(state);
     setSaveStatus('saved', 'Файл создан');
     unlockAchievement('obsidian-rune');
   } catch (error) {
     alert(`Не получилось создать доску: ${error}`);
+  }
+});
+
+recentBoardSelect?.addEventListener('change', async () => {
+  const path = recentBoardSelect.value;
+  if (!desktopApi || !path) return;
+  try {
+    const selected = await desktopApi.invoke('open_recent_board_file', { path });
+    if (!selected || !Array.isArray(selected.tasks)) throw new Error('Неверный формат доски');
+    state = selected;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    await refreshDesktopStatus();
+    setSaveStatus('saved', 'Файл открыт');
+    unlockAchievement('mirror-ritual');
+    render();
+  } catch (error) {
+    recentBoardSelect.value = desktopBoardPath || '';
+    setSaveStatus('error', 'Не открылось');
+    alert(`Не получилось открыть недавнюю доску: ${error}`);
   }
 });
 
@@ -731,23 +752,40 @@ async function refreshDesktopStatus() {
   try {
     const status = await desktopApi.invoke('desktop_status');
     desktopBoardPath = status?.boardPath || null;
+    recentBoardPaths = Array.isArray(status?.recentBoardPaths) ? status.recentBoardPaths : [];
   } catch (error) {
     console.warn('RTB desktop status unavailable:', error);
     desktopApi = null;
     desktopBoardPath = null;
+    recentBoardPaths = [];
   }
   renderDesktopControls();
 }
 
 function renderDesktopControls() {
   const enabled = Boolean(desktopApi);
-  [openBoardBtn, createBoardBtn, desktopBoardStatus].forEach(node => node?.classList.toggle('hidden', !enabled));
+  [openBoardBtn, createBoardBtn, recentBoardSelect, desktopBoardStatus].forEach(node => node?.classList.toggle('hidden', !enabled));
   document.body.classList.toggle('desktop-app', enabled);
   if (!desktopBoardStatus || !enabled) return;
+  renderRecentBoardSelect();
   desktopBoardStatus.textContent = desktopBoardPath
     ? `Файл: ${shortPath(desktopBoardPath)}`
     : 'Demo mode · файл не выбран';
   desktopBoardStatus.title = desktopBoardPath || 'Выбери или создай Markdown-файл доски';
+}
+
+function renderRecentBoardSelect() {
+  if (!recentBoardSelect) return;
+  recentBoardSelect.innerHTML = '<option value="">Недавние доски</option>';
+  recentBoardPaths.forEach(path => {
+    const option = document.createElement('option');
+    option.value = path;
+    option.textContent = shortPath(path);
+    option.title = path;
+    if (path === desktopBoardPath) option.selected = true;
+    recentBoardSelect.append(option);
+  });
+  recentBoardSelect.disabled = recentBoardPaths.length === 0;
 }
 
 function setSaveStatus(kind = 'local', text = 'Локально') {
