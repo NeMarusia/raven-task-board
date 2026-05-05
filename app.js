@@ -78,11 +78,11 @@ areas.forEach(area => {
 
 const cosmeticCatalog = [
   { id: 'hat-none', type: 'hat', icon: '—', title: 'Без шляпы', value: 'none', starter: true },
-  { id: 'hat-witch', type: 'hat', icon: '🧙‍♀️', title: 'Ведьмина шляпа', value: 'witch' },
-  { id: 'hat-crown', type: 'hat', icon: '👑', title: 'Корона хаоса', value: 'crown' },
-  { id: 'hat-party', type: 'hat', icon: '🥳', title: 'Колпак победы', value: 'party' },
-  { id: 'hat-cap', type: 'hat', icon: '🎩', title: 'Цилиндр джентльворона', value: 'cap' },
-  { id: 'hat-flower', type: 'hat', icon: '🌺', title: 'Попугайский цветочек', value: 'flower' },
+  { id: 'hat-witch', type: 'hat', icon: '◢', title: 'Ведьмина шляпа', value: 'witch' },
+  { id: 'hat-crown', type: 'hat', icon: '♛', title: 'Корона хаоса', value: 'crown' },
+  { id: 'hat-party', type: 'hat', icon: '▲', title: 'Колпак победы', value: 'party' },
+  { id: 'hat-cap', type: 'hat', icon: '▔', title: 'Цилиндр джентльворона', value: 'cap' },
+  { id: 'hat-flower', type: 'hat', icon: '✿', title: 'Попугайский цветочек', value: 'flower' },
   { id: 'perch-twig', type: 'perch', icon: '🌿', title: 'Обычная ветка', value: 'twig', starter: true },
   { id: 'perch-moon', type: 'perch', icon: '🌙', title: 'Лунная жердочка', value: 'moon' },
   { id: 'perch-crystal', type: 'perch', icon: '💎', title: 'Кристальная ветвь', value: 'crystal' },
@@ -281,8 +281,8 @@ function streakDays(map) {
 function applyTheme() {
   document.body.classList.toggle('parrot-mode', productivityState.theme === 'parrot');
   const bird = productivityState.theme === 'parrot' ? '🦜' : '🐦‍⬛';
-  document.querySelector('#perchRaven').textContent = bird;
-  document.querySelector('#companionPreview').textContent = bird;
+  document.querySelector('#perchRaven .bird-emoji')?.replaceChildren(document.createTextNode(bird));
+  document.querySelector('#companionPreview .bird-emoji')?.replaceChildren(document.createTextNode(bird));
   if (themeBtn) themeBtn.textContent = productivityState.theme === 'parrot' ? '🌙 Raven-mode' : '☀️ Попугай-mode';
 }
 function startFocusSession() {

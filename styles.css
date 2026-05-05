@@ -179,6 +179,9 @@ button, .file-label {
   pointer-events: none;
 }
 .perch-raven {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
   border: 0;
   padding: 0;
   background: transparent;
@@ -190,6 +193,22 @@ button, .file-label {
   animation: perch-breathe 3.4s ease-in-out infinite;
   pointer-events: auto;
   cursor: pointer;
+}
+.bird-emoji {
+  display: block;
+  line-height: 1;
+}
+.raven-hat {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  z-index: 3;
+  width: .46em;
+  height: .32em;
+  pointer-events: none;
+  filter: drop-shadow(0 .08em .1em rgba(0,0,0,.45));
+  transform: translate(-50%, -50%);
+  transform-origin: 50% 90%;
 }
 .perch-stick {
   width: 132px;
@@ -495,23 +514,63 @@ button, .file-label {
 .cosmetic-card span { color: var(--muted); font-size: 12px; }
 .cosmetic-card.equipped { border-color: rgba(52,211,153,.55); box-shadow: 0 0 20px rgba(52,211,153,.12); }
 .cosmetic-card.locked { opacity: .45; filter: grayscale(1); cursor: not-allowed; }
-.raven-perch::before,
-.companion-preview::before {
-  position: absolute;
-  z-index: 3;
-  pointer-events: none;
-  filter: drop-shadow(0 8px 10px rgba(0,0,0,.45));
+.companion-preview .bird-emoji {
+  font-size: 74px;
+  filter: drop-shadow(0 16px 24px rgba(0,0,0,.45));
 }
-.raven-perch::before { top: -14px; font-size: 30px; }
-.companion-preview::before { top: 18px; font-size: 34px; }
-.raven-perch[data-hat="witch"]::before,
-.companion-preview[data-hat="witch"]::before { content: '🧙‍♀️'; transform: rotate(-16deg); }
-.raven-perch[data-hat="crown"]::before,
-.companion-preview[data-hat="crown"]::before { content: '👑'; transform: translateY(-2px) rotate(8deg); }
-.raven-perch[data-hat="party"]::before,
-.companion-preview[data-hat="party"]::before { content: '🥳'; transform: rotate(14deg); }
-.raven-perch[data-hat="cap"]::before,
-.companion-preview[data-hat="cap"]::before { content: '🎩'; transform: translateY(-2px) rotate(-7deg); }
+.companion-preview .raven-hat {
+  font-size: 74px;
+  top: 34%;
+}
+.raven-perch[data-hat="witch"] .raven-hat,
+.companion-preview[data-hat="witch"] .raven-hat {
+  width: .62em;
+  height: .54em;
+  top: 1%;
+  transform: translate(-56%, -52%) rotate(-14deg);
+  background: linear-gradient(135deg, #2f2148, #8b5cf6 58%, #2f2148);
+  clip-path: polygon(50% 0, 73% 67%, 100% 78%, 54% 90%, 2% 78%, 29% 67%);
+}
+.raven-perch[data-hat="crown"] .raven-hat,
+.companion-preview[data-hat="crown"] .raven-hat {
+  width: .52em;
+  height: .28em;
+  top: 3%;
+  transform: translate(-45%, -54%) rotate(8deg);
+  background: linear-gradient(180deg, #fde68a, #f59e0b);
+  clip-path: polygon(0 100%, 0 35%, 20% 68%, 35% 12%, 52% 64%, 70% 6%, 86% 66%, 100% 32%, 100% 100%);
+}
+.raven-perch[data-hat="party"] .raven-hat,
+.companion-preview[data-hat="party"] .raven-hat {
+  width: .34em;
+  height: .58em;
+  top: -1%;
+  transform: translate(-34%, -52%) rotate(16deg);
+  background: linear-gradient(160deg, #a78bfa 0 28%, #f472b6 28% 52%, #facc15 52% 76%, #34d399 76%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.raven-perch[data-hat="party"] .raven-hat::after,
+.companion-preview[data-hat="party"] .raven-hat::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -.09em;
+  width: .13em;
+  height: .13em;
+  border-radius: 50%;
+  background: #fef3c7;
+  transform: translateX(-50%);
+}
+.raven-perch[data-hat="cap"] .raven-hat,
+.companion-preview[data-hat="cap"] .raven-hat {
+  width: .56em;
+  height: .36em;
+  top: 2%;
+  transform: translate(-48%, -50%) rotate(-7deg);
+  background: linear-gradient(180deg, #353044, #09080f);
+  border-radius: .08em .08em .03em .03em;
+  box-shadow: inset 0 -.08em 0 rgba(167,139,250,.32), 0 .18em 0 -.1em #09080f;
+}
 .raven-perch[data-aura="stars"] .perch-raven,
 .companion-preview[data-aura="stars"] { text-shadow: 0 0 18px rgba(167,139,250,.9), 0 0 30px rgba(255,255,255,.35); }
 .raven-perch[data-aura="embers"] .perch-raven,
@@ -825,8 +884,16 @@ button, .file-label {
   0%, 100% { transform: translateY(0) rotate(-3deg); }
   50% { transform: translateY(-10px) rotate(3deg) scale(1.05); }
 }
-.raven-perch[data-hat="flower"]::before,
-.companion-preview[data-hat="flower"]::before { content: '🌺'; transform: rotate(-10deg); }
+.raven-perch[data-hat="flower"] .raven-hat,
+.companion-preview[data-hat="flower"] .raven-hat {
+  width: .28em;
+  height: .28em;
+  top: 8%;
+  transform: translate(-18%, -42%) rotate(-10deg);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fef3c7 0 18%, #f472b6 20% 38%, transparent 40%),
+    conic-gradient(from 20deg, #f472b6 0 15%, transparent 15% 25%, #fb7185 25% 40%, transparent 40% 52%, #f9a8d4 52% 67%, transparent 67% 78%, #fb7185 78% 92%, transparent 92%);
+}
 .raven-perch[data-aura="rainbow"] .perch-raven,
 .companion-preview[data-aura="rainbow"] { text-shadow: 0 0 16px rgba(239,68,68,.7), 0 0 28px rgba(59,130,246,.6), 0 0 38px rgba(34,197,94,.45); }
 .raven-perch[data-aura="coffee"] .perch-raven,

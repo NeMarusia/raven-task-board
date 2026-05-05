@@ -33,7 +33,10 @@
   </header>
 
   <aside class="raven-perch" aria-label="Джарвис наблюдает за задачами">
-    <button id="perchRaven" class="perch-raven" type="button" aria-label="Потрогать ворона">🐦‍⬛</button>
+    <button id="perchRaven" class="perch-raven" type="button" aria-label="Потрогать ворона">
+      <span class="bird-emoji" aria-hidden="true">🐦‍⬛</span>
+      <span class="raven-hat" aria-hidden="true"></span>
+    </button>
     <div class="perch-stick"></div>
     <div class="perch-bubble">
       <strong>Джарвис на посту</strong>
@@ -127,7 +130,10 @@
         <button id="companionClose" type="button" class="ghost">Закрыть</button>
       </div>
       <div class="companion-stage">
-        <div id="companionPreview" class="companion-preview" aria-hidden="true">🐦‍⬛</div>
+        <div id="companionPreview" class="companion-preview" aria-hidden="true">
+          <span class="bird-emoji">🐦‍⬛</span>
+          <span class="raven-hat"></span>
+        </div>
         <div class="companion-stats">
           <div><strong id="companionKeys">0</strong><span>клавиш внутри доски</span></div>
           <div><strong id="companionClicks">0</strong><span>кликов и действий</span></div>
