@@ -23,6 +23,7 @@ struct Settings {
 #[serde(rename_all = "camelCase")]
 struct DesktopStatus {
     available: bool,
+    app_version: String,
     board_path: Option<String>,
     recent_board_paths: Vec<String>,
 }
@@ -257,6 +258,7 @@ fn desktop_status(app: AppHandle) -> DesktopStatus {
     let settings = read_settings(&app);
     DesktopStatus {
         available: true,
+        app_version: app.package_info().version.to_string(),
         board_path: settings.board_path,
         recent_board_paths: settings.recent_board_paths,
     }

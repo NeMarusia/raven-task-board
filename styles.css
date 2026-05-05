@@ -65,6 +65,7 @@ button, .file-label {
 }
 .ghost { background: rgba(255,255,255,.08); color: var(--text); border: 1px solid var(--line); }
 .board-status,
+.app-version,
 .save-status {
   max-width: 240px;
   align-self: center;
@@ -78,6 +79,7 @@ button, .file-label {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.app-version { max-width: 110px; }
 .save-status { max-width: 180px; }
 .save-status.saving { color: #fde68a; border-color: rgba(251,191,36,.32); }
 .save-status.saved { color: #bbf7d0; border-color: rgba(52,211,153,.30); }
@@ -1192,6 +1194,7 @@ body.parrot-mode .today-mini {
 body.parrot-mode button,
 body.parrot-mode .file-label,
 body.parrot-mode .board-status,
+body.parrot-mode .app-version,
 body.parrot-mode .save-status {
   color: #244019;
 }

@@ -33,6 +33,7 @@ let focusTimer = null;
 let desktopApi = null;
 let desktopBoardPath = null;
 let recentBoardPaths = [];
+let desktopAppVersion = null;
 
 const RAVEN_LINE_MIN_MS = 4200;
 const RAVEN_LINE_MAX_MS = 5600;
@@ -62,6 +63,7 @@ const openBoardBtn = document.querySelector('#openBoardBtn');
 const createBoardBtn = document.querySelector('#createBoardBtn');
 const recentBoardSelect = document.querySelector('#recentBoardSelect');
 const desktopBoardStatus = document.querySelector('#desktopBoardStatus');
+const appVersion = document.querySelector('#appVersion');
 const saveStatus = document.querySelector('#saveStatus');
 
 // HTML already contains fallback options so the select is never an empty Chrome goblin.
@@ -753,18 +755,20 @@ async function refreshDesktopStatus() {
     const status = await desktopApi.invoke('desktop_status');
     desktopBoardPath = status?.boardPath || null;
     recentBoardPaths = Array.isArray(status?.recentBoardPaths) ? status.recentBoardPaths : [];
+    desktopAppVersion = status?.appVersion || null;
   } catch (error) {
     console.warn('RTB desktop status unavailable:', error);
     desktopApi = null;
     desktopBoardPath = null;
     recentBoardPaths = [];
+    desktopAppVersion = null;
   }
   renderDesktopControls();
 }
 
 function renderDesktopControls() {
   const enabled = Boolean(desktopApi);
-  [openBoardBtn, createBoardBtn, recentBoardSelect, desktopBoardStatus].forEach(node => node?.classList.toggle('hidden', !enabled));
+  [openBoardBtn, createBoardBtn, recentBoardSelect, desktopBoardStatus, appVersion].forEach(node => node?.classList.toggle('hidden', !enabled));
   document.body.classList.toggle('desktop-app', enabled);
   if (!desktopBoardStatus || !enabled) return;
   renderRecentBoardSelect();
@@ -772,6 +776,10 @@ function renderDesktopControls() {
     ? `Файл: ${shortPath(desktopBoardPath)}`
     : 'Demo mode · файл не выбран';
   desktopBoardStatus.title = desktopBoardPath || 'Выбери или создай Markdown-файл доски';
+  if (appVersion) {
+    appVersion.textContent = desktopAppVersion ? `RTB v${desktopAppVersion}` : 'RTB desktop';
+    appVersion.title = 'Версия desktop-приложения';
+  }
 }
 
 function renderRecentBoardSelect() {
