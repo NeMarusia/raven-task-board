@@ -65,7 +65,9 @@ npm run desktop:build
 
 В desktop-режиме можно открыть или создать Markdown-файл доски (`.md`). Приложение сохраняет путь к файлу в локальных настройках и пишет состояние в служебный блок `raven-task-board-json`, совместимый с Obsidian.
 
-Windows/macOS-сборки собираются через GitHub Actions workflow **Build RTB Desktop**. Подробная инструкция по установке, обновлению и релизам: [INSTALL.md](INSTALL.md). История изменений: [CHANGELOG.md](CHANGELOG.md).
+Готовые Windows/macOS-сборки доступны на странице [Releases](https://github.com/NeMarusia/raven-task-board/releases). Проверочные сборки для каждого пуша собираются через GitHub Actions workflow **Build RTB Desktop**.
+
+Подробная инструкция по установке, обновлению и релизам: [INSTALL.md](INSTALL.md). История изменений: [CHANGELOG.md](CHANGELOG.md).
 
 ### Вариант 1: просто открыть HTML
 

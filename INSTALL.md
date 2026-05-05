@@ -2,11 +2,15 @@
 
 RTB хранит доску отдельно от приложения — в выбранном Markdown-файле (`.md`). Поэтому переустановка или обновление `.app`/`.exe` не должны трогать задачи.
 
+Готовые установщики лежат на странице GitHub Releases:
+
+<https://github.com/NeMarusia/raven-task-board/releases>
+
 ## macOS
 
 ### Установка
 
-1. Откройте страницу последнего Release или успешного GitHub Actions build.
+1. Откройте страницу последнего [Release](https://github.com/NeMarusia/raven-task-board/releases/latest).
 2. Скачайте macOS-файл:
    - для Apple Silicon: `Raven-Task-Board-...-macOS-arm64.dmg`.
 3. Откройте `.dmg`.
@@ -37,7 +41,7 @@ RTB также делает локальные резервные копии п�
 
 ## Windows
 
-1. Скачайте Windows installer из Release или GitHub Actions artifact.
+1. Скачайте Windows installer из последнего [Release](https://github.com/NeMarusia/raven-task-board/releases/latest): `.msi` или `.exe`.
 2. Запустите установщик.
 3. Если Windows SmartScreen предупреждает о неизвестном издателе, выберите `More info / Подробнее` → `Run anyway / Выполнить в любом случае`.
 4. Для обновления установите новую версию поверх старой.
@@ -74,3 +78,5 @@ git push origin v0.1.1
 ```
 
 Workflow `Release RTB Desktop` соберёт desktop-пакеты и прикрепит их к GitHub Release.
+
+Первый desktop release: <https://github.com/NeMarusia/raven-task-board/releases/tag/v0.1.1>
