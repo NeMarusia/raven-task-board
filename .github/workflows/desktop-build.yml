@@ -13,6 +13,10 @@ on:
       - 'scripts/**'
       - 'src-tauri/**'
       - '.github/workflows/desktop-build.yml'
+      - '.github/workflows/release.yml'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
