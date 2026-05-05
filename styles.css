@@ -1311,6 +1311,20 @@ body.parrot-mode .edit-dialog h2 {
   color: #24180c;
   text-shadow: 0 1px 0 rgba(255,255,255,.75);
 }
+body.parrot-mode .achievement-toast {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255,255,255,.96), transparent 34%),
+    linear-gradient(135deg, rgba(255,255,255,.96), rgba(236,253,245,.92) 55%, rgba(255,247,237,.92));
+  color: #24180c;
+  border-color: rgba(20,184,166,.30);
+  box-shadow: 0 20px 46px rgba(92,64,36,.18), 0 0 0 1px rgba(255,255,255,.70) inset;
+}
+body.parrot-mode .achievement-toast span {
+  color: #6b4f34;
+}
+body.parrot-mode .achievement-toast .achievement-icon {
+  filter: drop-shadow(0 8px 14px rgba(92,64,36,.18));
+}
 body.parrot-mode .achievement-summary,
 body.parrot-mode .companion-summary,
 body.parrot-mode .companion-stats span,
