@@ -1099,9 +1099,32 @@ function taskCard(task, options = {}) {
   });
   card.querySelector('.area').textContent = `${areaName(task.area)} · ${quadrants[task.quadrant]}`;
   card.querySelector('.due').textContent = task.done && task.doneAt ? `закрыто ${formatDateTime(task.doneAt)}` : (task.due ? formatDate(task.due) : '');
+  const noteText = String(task.note || '').trim();
   const note = card.querySelector('.note');
-  note.textContent = task.note;
-  note.hidden = !task.note;
+  const noteToggle = card.querySelector('.toggle-note');
+  note.textContent = noteText;
+  note.hidden = true;
+  card.classList.toggle('has-note', Boolean(noteText));
+
+  const setNoteOpen = open => {
+    if (!noteText) return;
+    card.classList.toggle('note-open', open);
+    note.hidden = !open;
+    noteToggle.textContent = open ? 'Свернуть комментарий' : 'Открыть комментарий';
+    noteToggle.setAttribute('aria-expanded', String(open));
+  };
+  if (noteText) {
+    noteToggle.classList.remove('hidden');
+    noteToggle.setAttribute('aria-expanded', 'false');
+    noteToggle.addEventListener('click', event => {
+      event.stopPropagation();
+      setNoteOpen(!card.classList.contains('note-open'));
+    });
+    card.addEventListener('click', event => {
+      if (event.target.closest('button, input, select, textarea, label, a')) return;
+      setNoteOpen(!card.classList.contains('note-open'));
+    });
+  }
 
   card.addEventListener('dragstart', event => {
     draggedId = task.id;
