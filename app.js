@@ -27,7 +27,7 @@ let ravenMoodHoldUntil = 0;
 let ravenMoodTimer = null;
 let ravenMoodGuard = null;
 let ravenHeldMood = '';
-let companionState = loadCompanionState();
+let companionState;
 let productivityState = loadProductivityState();
 let focusTimer = null;
 let desktopApi = null;
@@ -111,6 +111,8 @@ const cosmeticCatalog = [
   { id: 'wallpaper-library', type: 'wallpaper', icon: '📚', title: 'Магическая библиотека', value: 'library' },
   { id: 'wallpaper-aurora', type: 'wallpaper', icon: '🌠', title: 'Северное сияние', value: 'aurora' },
 ];
+
+companionState = loadCompanionState();
 
 function loadCompanionState() {
   const fallback = {
