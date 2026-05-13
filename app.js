@@ -104,15 +104,6 @@ const cosmeticCatalog = [
   { id: 'aura-ghost', type: 'aura', icon: '👻', title: 'Туман фамильяра', value: 'ghost' },
   { id: 'aura-rainbow', type: 'aura', icon: '🌈', title: 'Радужный шум', value: 'rainbow' },
   { id: 'aura-coffee', type: 'aura', icon: '☕', title: 'Кофейная концентрация', value: 'coffee' },
-  { id: 'wallpaper-none', type: 'wallpaper', icon: '—', title: 'Без обоев', value: 'none', starter: true },
-  { id: 'wallpaper-palms', type: 'wallpaper', icon: '🌴', title: 'Пальмы и море', value: 'palms' },
-  { id: 'wallpaper-stars', type: 'wallpaper', icon: '🌌', title: 'Созвездия', value: 'stars' },
-  { id: 'wallpaper-mountains', type: 'wallpaper', icon: '⛰️', title: 'Горы на рассвете', value: 'mountains' },
-  { id: 'wallpaper-surf', type: 'wallpaper', icon: '🌊', title: 'Прибой', value: 'surf' },
-  { id: 'wallpaper-moon', type: 'wallpaper', icon: '🌕', title: 'Яркая луна', value: 'moon' },
-  { id: 'wallpaper-forest', type: 'wallpaper', icon: '🌲', title: 'Туманный лес', value: 'forest' },
-  { id: 'wallpaper-library', type: 'wallpaper', icon: '📚', title: 'Магическая библиотека', value: 'library' },
-  { id: 'wallpaper-aurora', type: 'wallpaper', icon: '🌠', title: 'Северное сияние', value: 'aurora' },
 ];
 
 companionState = loadCompanionState();
@@ -125,7 +116,7 @@ function loadCompanionState() {
     lastRewardAt: 0,
     inventory: previewUnlockCosmetics
       ? cosmeticCatalog.map(item => item.id)
-      : ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
+      : ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none'],
     equipped: { bird: null, hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
   };
   try {
@@ -137,7 +128,7 @@ function loadCompanionState() {
       ...fallback,
       ...saved,
       inventory,
-      equipped: { ...fallback.equipped, ...(saved.equipped || {}) },
+      equipped: { ...fallback.equipped, ...(saved.equipped || {}), wallpaper: 'none' },
     };
   } catch {
     return fallback;
@@ -193,7 +184,8 @@ function bongoAssetPath(target = companionState.equipped || {}) {
 function applyCompanionCosmetics() {
   const perch = document.querySelector('.raven-perch');
   const preview = document.querySelector('#companionPreview');
-  const target = companionState.equipped || {};
+  const target = { ...(companionState.equipped || {}), wallpaper: 'none' };
+  companionState.equipped = target;
   const bird = target.bird || (productivityState.theme === 'parrot' ? 'parrot' : 'raven');
   const src = bongoAssetPath(target);
   document.body.dataset.wallpaper = target.wallpaper || 'none';
