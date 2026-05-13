@@ -448,7 +448,7 @@ button, .file-label {
   text-align: center;
   box-shadow: 0 12px 30px rgba(0,0,0,.18);
 }
-.trophy-bird .trophy-raven {
+.trophy-bird .trophy-icon {
   font-size: 34px;
   filter: drop-shadow(0 8px 12px rgba(0,0,0,.45));
 }
@@ -460,7 +460,7 @@ button, .file-label {
   border-style: dashed;
   background: rgba(255,255,255,.035);
 }
-.trophy-bird.mystery .trophy-raven { filter: grayscale(1) opacity(.72); }
+.trophy-bird.mystery .trophy-icon { filter: grayscale(1) opacity(.72); }
 .raven-perch.speaking .perch-bubble {
   border-color: rgba(249,115,22,.45);
   box-shadow: var(--shadow), 0 0 24px rgba(249,115,22,.16);
@@ -834,7 +834,6 @@ button, .file-label {
     radial-gradient(circle at 18% 42%, rgba(255,255,255,.18) 0 4px, transparent 5px),
     linear-gradient(90deg, #51351f, #8b5a2b 38%, #5f3d22 72%, #2f2117);
 }
-.companion-preview[data-perch="twig"] .trophy-raven { z-index: 2; }
 .companion-preview[data-perch="swing"]::after {
   left: 42px;
   right: 42px;
@@ -1497,7 +1496,7 @@ body.parrot-mode .trophy-bird strong,
 body.parrot-mode .cosmetic-card strong {
   color: #24180c;
 }
-body.parrot-mode .trophy-bird .trophy-raven,
+body.parrot-mode .trophy-bird .trophy-icon,
 body.parrot-mode .companion-preview {
   filter: drop-shadow(0 12px 18px rgba(92,64,36,.22));
 }

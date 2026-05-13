@@ -659,13 +659,13 @@ function renderAchievementTree() {
     node.className = 'trophy-bird';
     const date = new Date(achievementState.unlocked[item.id]);
     const when = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('ru-RU');
-    node.innerHTML = `<div class="trophy-raven" aria-hidden="true">🐦‍⬛${item.icon}</div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.text)}</span>${when ? `<time>${escapeHtml(when)}</time>` : ''}`;
+    node.innerHTML = `<div class="trophy-icon" aria-hidden="true">${item.icon}</div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.text)}</span>${when ? `<time>${escapeHtml(when)}</time>` : ''}`;
     tree.append(node);
   });
   if (lockedCount) {
     const node = document.createElement('article');
     node.className = 'trophy-bird mystery';
-    node.innerHTML = `<div class="trophy-raven" aria-hidden="true">🐦‍⬛?</div><strong>Скрытые ветки</strong><span>Ещё ${lockedCount} ждёт своего момента. Условия засекречены, потому что магия должна кусаться.</span>`;
+    node.innerHTML = `<div class="trophy-icon" aria-hidden="true">?</div><strong>Скрытые ветки</strong><span>Ещё ${lockedCount} ждёт своего момента. Условия засекречены, потому что магия должна кусаться.</span>`;
     tree.append(node);
   }
 }
