@@ -39,6 +39,7 @@ const RAVEN_LINE_MIN_MS = 4200;
 const RAVEN_LINE_MAX_MS = 5600;
 const RAVEN_GIFT_COOLDOWN_MS = 60 * 60 * 1000;
 const RAVEN_GIFT_ACTIVITY = 80;
+const COMPANION_INVENTORY_VERSION = 2;
 
 const areaSelect = document.querySelector('#taskArea');
 const form = document.querySelector('#taskForm');
@@ -102,23 +103,42 @@ const cosmeticCatalog = [
 
 companionState = loadCompanionState();
 
+function starterCompanionInventory() {
+  return cosmeticCatalog.filter(item => item.starter).map(item => item.id);
+}
+
+function sanitizeCompanionEquipped(equipped = {}, inventory = starterCompanionInventory()) {
+  const next = { bird: null, hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none', ...equipped, wallpaper: 'none' };
+  const hasItem = (type, value) => cosmeticCatalog.some(item => item.type === type && item.value === value && inventory.includes(item.id));
+  if (next.bird && !hasItem('bird', next.bird)) next.bird = null;
+  if (!hasItem('hat', next.hat)) next.hat = 'none';
+  if (!hasItem('perch', next.perch)) next.perch = 'twig';
+  if (!hasItem('aura', next.aura)) next.aura = 'none';
+  return next;
+}
+
 function loadCompanionState() {
   const fallback = {
     activity: 0,
     totalKeys: 0,
     totalClicks: 0,
     lastRewardAt: 0,
-    inventory: ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none'],
+    inventoryVersion: COMPANION_INVENTORY_VERSION,
+    inventory: starterCompanionInventory(),
     equipped: { bird: null, hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem(COMPANION_KEY) || '{}');
-    const inventory = Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])]));
+    const resetLegacyInventory = saved.inventoryVersion !== COMPANION_INVENTORY_VERSION;
+    const inventory = resetLegacyInventory
+      ? fallback.inventory
+      : Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])]));
     return {
       ...fallback,
       ...saved,
+      inventoryVersion: COMPANION_INVENTORY_VERSION,
       inventory,
-      equipped: { ...fallback.equipped, ...(saved.equipped || {}), wallpaper: 'none' },
+      equipped: sanitizeCompanionEquipped(resetLegacyInventory ? fallback.equipped : saved.equipped, inventory),
     };
   } catch {
     return fallback;
