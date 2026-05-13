@@ -190,27 +190,6 @@ function bongoAssetPath(target = companionState.equipped || {}) {
   return `assets/bongo/combined/${bongoAssetName(target)}`;
 }
 
-function cosmeticPreviewMarkup(item) {
-  const equipped = companionState.equipped || {};
-  if (['bird', 'hat', 'perch'].includes(item.type)) {
-    const target = { ...equipped, [item.type]: item.value };
-    return `<span class="cosmetic-thumb cosmetic-thumb-bongo"><img src="${escapeHtml(bongoAssetPath(target))}" alt="" loading="lazy" /></span>`;
-  }
-  if (item.type === 'wallpaper') {
-    const image = item.value === 'none' ? '' : ` style="background-image:url('assets/wallpapers/${escapeHtml(item.value)}.jpg')"`;
-    return `<span class="cosmetic-thumb cosmetic-thumb-wallpaper"${image}>${item.value === 'none' ? '—' : ''}</span>`;
-  }
-  return `<span class="cosmetic-thumb cosmetic-thumb-emoji">${escapeHtml(item.icon)}</span>`;
-}
-
-const cosmeticSections = [
-  ['bird', 'Птица'],
-  ['hat', 'Шляпы'],
-  ['perch', 'Жердочки'],
-  ['aura', 'Ауры'],
-  ['wallpaper', 'Обои'],
-];
-
 function applyCompanionCosmetics() {
   const perch = document.querySelector('.raven-perch');
   const preview = document.querySelector('#companionPreview');
@@ -298,13 +277,7 @@ function renderCosmeticGrid() {
   const grid = document.querySelector('#cosmeticGrid');
   if (!grid) return;
   grid.innerHTML = '';
-  cosmeticSections.forEach(([type, title]) => {
-    const items = cosmeticCatalog.filter(item => item.type === type);
-    const section = document.createElement('section');
-    section.className = 'cosmetic-section';
-    section.innerHTML = `<h4>${escapeHtml(title)}</h4><div class="cosmetic-section-grid"></div>`;
-    const sectionGrid = section.querySelector('.cosmetic-section-grid');
-    items.forEach(item => {
+  cosmeticCatalog.forEach(item => {
     const owned = previewUnlockCosmetics || companionState.inventory.includes(item.id);
     const equippedValue = item.type === 'bird'
       ? (companionState.equipped?.bird || (productivityState.theme === 'parrot' ? 'parrot' : 'raven'))
@@ -313,7 +286,7 @@ function renderCosmeticGrid() {
     const node = document.createElement('button');
     node.type = 'button';
     node.className = `cosmetic-card${owned ? '' : ' locked'}${equipped ? ' equipped' : ''}`;
-    node.innerHTML = `${cosmeticPreviewMarkup(item)}<span class="cosmetic-copy"><strong>${escapeHtml(item.title)}</strong><small>${owned ? (equipped ? 'надето' : 'примерить') : 'ещё не найдено'}</small></span>`;
+    node.innerHTML = `<strong>${escapeHtml(item.icon)} ${escapeHtml(item.title)}</strong><span>${owned ? (equipped ? 'надето' : 'примерить') : 'ещё не найдено'}</span>`;
     node.disabled = !owned;
     node.addEventListener('click', () => {
       companionState.equipped[item.type] = item.value;
@@ -322,9 +295,7 @@ function renderCosmeticGrid() {
       renderCompanion();
       holdRavenMood(`Так, образ обновлён: ${item.title}. Ворон доволен собой.`, 4600);
     });
-      sectionGrid.append(node);
-    });
-    grid.append(section);
+    grid.append(node);
   });
 }
 
