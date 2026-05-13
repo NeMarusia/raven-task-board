@@ -76,6 +76,8 @@ areas.forEach(area => {
   if (editArea) editArea.append(option.cloneNode(true));
 });
 
+const UNLOCK_ALL_COSMETICS_TEMP = true;
+
 const cosmeticCatalog = [
   { id: 'bird-raven', type: 'bird', icon: '🐦‍⬛', title: 'Ворон', value: 'raven', starter: true },
   { id: 'bird-parrot', type: 'bird', icon: '🦜', title: 'Попуг', value: 'parrot', starter: true },
@@ -115,15 +117,20 @@ function loadCompanionState() {
     totalKeys: 0,
     totalClicks: 0,
     lastRewardAt: 0,
-    inventory: ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
+    inventory: UNLOCK_ALL_COSMETICS_TEMP
+      ? cosmeticCatalog.map(item => item.id)
+      : ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
     equipped: { bird: null, hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem(COMPANION_KEY) || '{}');
+    const inventory = UNLOCK_ALL_COSMETICS_TEMP
+      ? cosmeticCatalog.map(item => item.id)
+      : Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])]));
     return {
       ...fallback,
       ...saved,
-      inventory: Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])])),
+      inventory,
       equipped: { ...fallback.equipped, ...(saved.equipped || {}) },
     };
   } catch {
