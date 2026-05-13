@@ -986,61 +986,130 @@ body.parrot-mode .focus-clock {
   color: white;
   box-shadow: 0 16px 34px rgba(34,197,94,.24), inset 0 0 24px rgba(255,255,255,.24);
 }
+body[data-wallpaper]:not([data-wallpaper="none"]) {
+  --wallpaper-image: none;
+  --wallpaper-position: center center;
+  --location-accent: var(--accent);
+  --location-accent-2: var(--accent-2);
+  background-color: #0d0b14;
+  background-image:
+    linear-gradient(180deg, rgba(7,7,12,.40) 0%, rgba(7,7,12,.78) 55%, rgba(7,7,12,.92) 100%),
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--location-accent) 30%, transparent), transparent 34%),
+    var(--wallpaper-image);
+  background-size: cover, cover, cover;
+  background-position: center top, center top, var(--wallpaper-position);
+  background-repeat: no-repeat;
+  background-attachment: fixed, fixed, fixed;
+}
 body[data-wallpaper="palms"] {
-  background:
-    radial-gradient(circle at 15% 18%, rgba(34,197,94,.28), transparent 22%),
-    radial-gradient(circle at 80% 78%, rgba(14,165,233,.28), transparent 30%),
-    linear-gradient(160deg, rgba(255,247,237,.96), rgba(125,211,252,.78));
+  --wallpaper-image: url("assets/wallpapers/palms.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #22c55e;
+  --location-accent-2: #06b6d4;
+  --accent: #34d399;
+  --accent-2: #38bdf8;
 }
 body[data-wallpaper="stars"] {
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,.9) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 30%, rgba(255,255,255,.75) 0 1px, transparent 2px),
-    radial-gradient(circle at 84% 72%, rgba(167,139,250,.32), transparent 28%),
-    linear-gradient(145deg, #080719, #17112f 55%, #05040b);
+  --wallpaper-image: url("assets/wallpapers/stars.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #a78bfa;
+  --location-accent-2: #38bdf8;
+  --accent: #c4b5fd;
+  --accent-2: #60a5fa;
 }
 body[data-wallpaper="mountains"] {
-  background:
-    linear-gradient(135deg, transparent 55%, rgba(15,23,42,.5) 56%),
-    linear-gradient(45deg, transparent 58%, rgba(71,85,105,.62) 59%),
-    linear-gradient(180deg, #fde68a 0%, #bfdbfe 42%, #1e293b 100%);
+  --wallpaper-image: url("assets/wallpapers/mountains.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #fbbf24;
+  --location-accent-2: #93c5fd;
+  --accent: #fbbf24;
+  --accent-2: #93c5fd;
 }
 body[data-wallpaper="surf"] {
-  background:
-    radial-gradient(ellipse at 50% 110%, rgba(255,255,255,.9) 0 12%, transparent 13%),
-    repeating-linear-gradient(170deg, rgba(255,255,255,.26) 0 12px, transparent 12px 28px),
-    linear-gradient(180deg, #0ea5e9, #0369a1 60%, #082f49);
+  --wallpaper-image: url("assets/wallpapers/surf.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #22d3ee;
+  --location-accent-2: #0ea5e9;
+  --accent: #67e8f9;
+  --accent-2: #38bdf8;
 }
 body[data-wallpaper="moon"] {
-  background:
-    radial-gradient(circle at 78% 16%, #fff7cc 0 48px, rgba(255,247,204,.35) 49px 86px, transparent 87px),
-    radial-gradient(circle at 20% 80%, rgba(167,139,250,.22), transparent 28%),
-    linear-gradient(160deg, #0f1028, #12101a 60%, #05040a);
+  --wallpaper-image: url("assets/wallpapers/moon.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #fde68a;
+  --location-accent-2: #a78bfa;
+  --accent: #fde68a;
+  --accent-2: #c4b5fd;
 }
 body[data-wallpaper="forest"] {
-  background:
-    repeating-linear-gradient(90deg, rgba(20,83,45,.42) 0 16px, transparent 16px 44px),
-    radial-gradient(circle at 50% 0%, rgba(187,247,208,.2), transparent 36%),
-    linear-gradient(180deg, #052e16, #111827);
+  --wallpaper-image: url("assets/wallpapers/forest.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #34d399;
+  --location-accent-2: #84cc16;
+  --accent: #86efac;
+  --accent-2: #34d399;
 }
 body[data-wallpaper="library"] {
-  background:
-    repeating-linear-gradient(90deg, rgba(120,53,15,.4) 0 28px, rgba(69,26,3,.4) 28px 34px, transparent 34px 46px),
-    radial-gradient(circle at 80% 10%, rgba(251,191,36,.22), transparent 28%),
-    linear-gradient(160deg, #2b170d, #111018);
+  --wallpaper-image: url("assets/wallpapers/library.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #f59e0b;
+  --location-accent-2: #a78bfa;
+  --accent: #fbbf24;
+  --accent-2: #c084fc;
 }
 body[data-wallpaper="aurora"] {
-  background:
-    radial-gradient(ellipse at 40% 0%, rgba(34,197,94,.42), transparent 38%),
-    radial-gradient(ellipse at 70% 10%, rgba(59,130,246,.38), transparent 34%),
-    radial-gradient(ellipse at 20% 20%, rgba(236,72,153,.24), transparent 30%),
-    linear-gradient(180deg, #020617, #111827);
+  --wallpaper-image: url("assets/wallpapers/aurora.jpg");
+  --wallpaper-position: center center;
+  --location-accent: #34d399;
+  --location-accent-2: #a78bfa;
+  --accent: #6ee7b7;
+  --accent-2: #c4b5fd;
 }
 body[data-wallpaper]:not([data-wallpaper="none"]) .card,
 body[data-wallpaper]:not([data-wallpaper="none"]) .column,
 body[data-wallpaper]:not([data-wallpaper="none"]) .matrix-cell,
-body[data-wallpaper]:not([data-wallpaper="none"]) .list-view {
-  backdrop-filter: blur(14px);
+body[data-wallpaper]:not([data-wallpaper="none"]) .list-view,
+body[data-wallpaper]:not([data-wallpaper="none"]) .today-panel,
+body[data-wallpaper]:not([data-wallpaper="none"]) .productivity-panel,
+body[data-wallpaper]:not([data-wallpaper="none"]) .companion-card,
+body[data-wallpaper]:not([data-wallpaper="none"]) .achievements-card,
+body[data-wallpaper]:not([data-wallpaper="none"]) .edit-card {
+  background: linear-gradient(180deg, rgba(18,16,26,.82), rgba(18,16,26,.66));
+  border-color: color-mix(in srgb, var(--location-accent) 28%, rgba(255,255,255,.12));
+  box-shadow: 0 20px 54px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter: blur(18px) saturate(1.05);
+}
+body[data-wallpaper]:not([data-wallpaper="none"]) .app-header {
+  margin: 18px clamp(14px, 3vw, 34px) 18px;
+  padding: 26px clamp(18px, 4vw, 34px);
+  border: 1px solid color-mix(in srgb, var(--location-accent) 25%, rgba(255,255,255,.12));
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(13,10,20,.72), rgba(13,10,20,.42));
+  box-shadow: 0 24px 70px rgba(0,0,0,.36);
+  backdrop-filter: blur(16px) saturate(1.1);
+}
+body[data-wallpaper]:not([data-wallpaper="none"]) button,
+body[data-wallpaper]:not([data-wallpaper="none"]) .file-label,
+body[data-wallpaper]:not([data-wallpaper="none"]) .tab.active,
+body[data-wallpaper]:not([data-wallpaper="none"]) .filter.active {
+  background: linear-gradient(135deg, var(--location-accent), var(--location-accent-2));
+}
+body[data-wallpaper="library"] .composer h2::before { content: '📚 '; }
+body[data-wallpaper="forest"] .composer h2::before { content: '🌲 '; }
+body[data-wallpaper="mountains"] .composer h2::before { content: '⛰️ '; }
+body[data-wallpaper="palms"] .composer h2::before { content: '🌴 '; }
+body[data-wallpaper="surf"] .composer h2::before { content: '🌊 '; }
+body[data-wallpaper="moon"] .composer h2::before { content: '🌕 '; }
+body[data-wallpaper="stars"] .composer h2::before { content: '🌌 '; }
+body[data-wallpaper="aurora"] .composer h2::before { content: '🌠 '; }
+@media (max-width: 760px) {
+  body[data-wallpaper]:not([data-wallpaper="none"]) {
+    background-attachment: scroll, scroll, scroll;
+    background-position: center top, center top, center top;
+  }
+  body[data-wallpaper]:not([data-wallpaper="none"]) .app-header {
+    margin: 12px;
+  }
 }
 
 /* Light/parrot mode contrast pass: cute, but no disappearing ink. */
@@ -1528,43 +1597,7 @@ body.parrot-mode .companion-head .ghost {
   border-color: rgba(92,64,36,.18);
 }
 
-/* Theme-aware wallpapers: dark wallpapers keep their drama in raven-mode,
-   but parrot/light mode gets airy versions so backgrounds and text do not fight. */
-body.parrot-mode[data-wallpaper="stars"] {
-  background:
-    linear-gradient(28deg, transparent 21%, rgba(14,165,233,.18) 21.5%, transparent 22%, transparent 67%, rgba(168,85,247,.14) 67.5%, transparent 68%),
-    radial-gradient(circle at 18% 20%, rgba(14,165,233,.55) 0 2px, transparent 3px),
-    radial-gradient(circle at 31% 32%, rgba(168,85,247,.45) 0 2px, transparent 3px),
-    radial-gradient(circle at 48% 18%, rgba(34,197,94,.38) 0 2px, transparent 3px),
-    radial-gradient(circle at 72% 26%, rgba(245,158,11,.38) 0 2px, transparent 3px),
-    radial-gradient(circle at 84% 64%, rgba(14,165,233,.32), transparent 22%),
-    linear-gradient(160deg, #fff7ed 0%, #ecfeff 48%, #f5f3ff 100%);
-}
-body.parrot-mode[data-wallpaper="moon"] {
-  background:
-    radial-gradient(circle at 78% 16%, rgba(251,191,36,.62) 0 46px, rgba(251,191,36,.18) 47px 92px, transparent 93px),
-    radial-gradient(circle at 18% 82%, rgba(167,139,250,.2), transparent 30%),
-    linear-gradient(160deg, #fff7ed, #eef2ff 58%, #e0f2fe);
-}
-body.parrot-mode[data-wallpaper="forest"] {
-  background:
-    repeating-linear-gradient(90deg, rgba(22,163,74,.16) 0 18px, transparent 18px 46px),
-    radial-gradient(circle at 50% 0%, rgba(187,247,208,.38), transparent 38%),
-    linear-gradient(180deg, #f0fdf4, #fff7ed 56%, #dcfce7);
-}
-body.parrot-mode[data-wallpaper="library"] {
-  background:
-    repeating-linear-gradient(90deg, rgba(217,119,6,.12) 0 28px, rgba(120,53,15,.10) 28px 34px, transparent 34px 48px),
-    radial-gradient(circle at 80% 10%, rgba(251,191,36,.24), transparent 30%),
-    linear-gradient(160deg, #fff7ed, #fef3c7 48%, #ffedd5);
-}
-body.parrot-mode[data-wallpaper="aurora"] {
-  background:
-    radial-gradient(ellipse at 38% 0%, rgba(34,197,94,.28), transparent 42%),
-    radial-gradient(ellipse at 72% 8%, rgba(14,165,233,.24), transparent 38%),
-    radial-gradient(ellipse at 22% 22%, rgba(236,72,153,.16), transparent 34%),
-    linear-gradient(180deg, #ecfeff, #f5f3ff 52%, #fff7ed);
-}
+/* Theme-aware wallpapers: scene assets stay fixed; parrot/light mode only adjusts text contrast. */
 body.parrot-mode[data-wallpaper="palms"] .app-header,
 body.parrot-mode[data-wallpaper="stars"] .app-header,
 body.parrot-mode[data-wallpaper="moon"] .app-header,
@@ -1605,4 +1638,17 @@ body.parrot-mode[data-wallpaper="aurora"] .app-header .eyebrow,
 body.parrot-mode[data-wallpaper="mountains"] .app-header .eyebrow,
 body.parrot-mode[data-wallpaper="surf"] .app-header .eyebrow {
   color: #15803d;
+}
+
+/* Keep scenic wallpapers alive in parrot-mode too; earlier parrot background shorthands are intentionally overridden here. */
+body.parrot-mode[data-wallpaper]:not([data-wallpaper="none"]) {
+  background-color: #0d0b14;
+  background-image:
+    linear-gradient(180deg, rgba(255,247,237,.18) 0%, rgba(13,10,20,.62) 52%, rgba(13,10,20,.82) 100%),
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--location-accent) 24%, transparent), transparent 34%),
+    var(--wallpaper-image);
+  background-size: cover, cover, cover;
+  background-position: center top, center top, var(--wallpaper-position);
+  background-repeat: no-repeat;
+  background-attachment: fixed, fixed, fixed;
 }
