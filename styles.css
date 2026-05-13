@@ -212,6 +212,24 @@ button, .file-label {
   pointer-events: auto;
   cursor: pointer;
 }
+.bongo-sprite {
+  display: block;
+  width: clamp(86px, 9vw, 132px);
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.raven-perch.bongo-image-mode .bird-emoji,
+.raven-perch.bongo-image-mode .raven-hat,
+.raven-perch.bongo-image-mode + .perch-stick,
+.companion-preview.bongo-image-mode .bird-emoji,
+.companion-preview.bongo-image-mode .raven-hat,
+.companion-preview.bongo-image-mode::before,
+.companion-preview.bongo-image-mode::after {
+  display: none;
+}
 .bird-emoji {
   display: block;
   line-height: 1;
@@ -499,6 +517,10 @@ button, .file-label {
   border-radius: 24px;
   background: radial-gradient(circle at 50% 34%, rgba(167,139,250,.2), transparent 42%), rgba(255,255,255,.04);
   font-size: 74px;
+  filter: drop-shadow(0 16px 24px rgba(0,0,0,.45));
+}
+.companion-preview .bongo-sprite {
+  width: min(142px, 78%);
   filter: drop-shadow(0 16px 24px rgba(0,0,0,.45));
 }
 .companion-stats {

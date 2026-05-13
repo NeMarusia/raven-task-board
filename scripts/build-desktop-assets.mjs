@@ -1,4 +1,4 @@
-import { mkdir, copyFile, rm } from 'node:fs/promises';
+import { mkdir, copyFile, cp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const root = process.cwd();
@@ -10,5 +10,7 @@ await mkdir(out, { recursive: true });
 for (const file of ['index.html', 'styles.css', 'app.js']) {
   await copyFile(join(root, file), join(out, file));
 }
+
+await cp(join(root, 'assets'), join(out, 'assets'), { recursive: true });
 
 console.log(`Desktop assets copied to ${out}`);
