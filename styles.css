@@ -223,7 +223,7 @@ button, .file-label {
 }
 .raven-perch.bongo-image-mode .bird-emoji,
 .raven-perch.bongo-image-mode .raven-hat,
-.raven-perch.bongo-image-mode + .perch-stick,
+.raven-perch.bongo-image-mode .perch-stick,
 .companion-preview.bongo-image-mode .bird-emoji,
 .companion-preview.bongo-image-mode .raven-hat,
 .companion-preview.bongo-image-mode::before,
