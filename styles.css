@@ -1012,10 +1012,10 @@ body[data-wallpaper="palms"] {
 body[data-wallpaper="stars"] {
   --wallpaper-image: url("assets/wallpapers/stars.jpg");
   --wallpaper-position: center center;
-  --location-accent: #a78bfa;
-  --location-accent-2: #38bdf8;
-  --accent: #c4b5fd;
-  --accent-2: #60a5fa;
+  --location-accent: #f59e0b;
+  --location-accent-2: #c084fc;
+  --accent: #fbbf24;
+  --accent-2: #c084fc;
 }
 body[data-wallpaper="mountains"] {
   --wallpaper-image: url("assets/wallpapers/mountains.jpg");
@@ -1644,7 +1644,7 @@ body.parrot-mode[data-wallpaper="surf"] .app-header .eyebrow {
 body.parrot-mode[data-wallpaper]:not([data-wallpaper="none"]) {
   background-color: #0d0b14;
   background-image:
-    linear-gradient(180deg, rgba(255,247,237,.18) 0%, rgba(13,10,20,.62) 52%, rgba(13,10,20,.82) 100%),
+    linear-gradient(180deg, rgba(255,247,237,.12) 0%, rgba(13,10,20,.62) 52%, rgba(13,10,20,.82) 100%),
     radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--location-accent) 24%, transparent), transparent 34%),
     var(--wallpaper-image);
   background-size: cover, cover, cover;
