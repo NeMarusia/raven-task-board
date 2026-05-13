@@ -76,6 +76,9 @@ areas.forEach(area => {
   if (editArea) editArea.append(option.cloneNode(true));
 });
 
+const previewParams = new URLSearchParams(window.location.search);
+const previewUnlockCosmetics = previewParams.get('preview') === 'cosmetics' || previewParams.get('unlock') === 'cosmetics';
+
 const cosmeticCatalog = [
   { id: 'bird-raven', type: 'bird', icon: '🐦‍⬛', title: 'Ворон', value: 'raven', starter: true },
   { id: 'bird-parrot', type: 'bird', icon: '🦜', title: 'Попуг', value: 'parrot', starter: true },
@@ -115,15 +118,20 @@ function loadCompanionState() {
     totalKeys: 0,
     totalClicks: 0,
     lastRewardAt: 0,
-    inventory: ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
+    inventory: previewUnlockCosmetics
+      ? cosmeticCatalog.map(item => item.id)
+      : ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
     equipped: { bird: null, hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem(COMPANION_KEY) || '{}');
+    const inventory = previewUnlockCosmetics
+      ? cosmeticCatalog.map(item => item.id)
+      : Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])]));
     return {
       ...fallback,
       ...saved,
-      inventory: Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])])),
+      inventory,
       equipped: { ...fallback.equipped, ...(saved.equipped || {}) },
     };
   } catch {
