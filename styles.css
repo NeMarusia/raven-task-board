@@ -214,8 +214,108 @@ button, .file-label {
 }
 .bird-emoji {
   display: block;
+  position: relative;
+  width: 1em;
+  height: 1em;
   line-height: 1;
 }
+.bird-sprite,
+.bird-sprite span {
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+}
+.bird-sprite {
+  inset: 0;
+  transform-origin: 50% 92%;
+  --bird-body: #111827;
+  --bird-body-2: #020617;
+  --bird-head: #161b27;
+  --bird-wing: #0b1020;
+  --bird-eye: #f8fafc;
+  --bird-beak: #f59e0b;
+  --bird-foot: #fbbf24;
+}
+.raven-perch[data-bird="parrot"] .bird-sprite,
+.companion-preview[data-bird="parrot"] .bird-sprite {
+  --bird-body: #22c55e;
+  --bird-body-2: #16a34a;
+  --bird-head: #84cc16;
+  --bird-wing: #facc15;
+  --bird-eye: #24180c;
+  --bird-beak: #f97316;
+  --bird-foot: #d97706;
+}
+.bird-body {
+  left: 32%;
+  top: 35%;
+  width: 45%;
+  height: 48%;
+  border-radius: 55% 48% 52% 48% / 48% 46% 56% 58%;
+  background: radial-gradient(circle at 36% 28%, rgba(255,255,255,.18), transparent 22%), linear-gradient(145deg, var(--bird-body), var(--bird-body-2));
+  filter: drop-shadow(0 .12em .12em rgba(0,0,0,.24));
+}
+.bird-head {
+  left: 21%;
+  top: 21%;
+  width: 40%;
+  height: 38%;
+  border-radius: 58% 48% 54% 46% / 56% 50% 50% 44%;
+  background: radial-gradient(circle at 40% 28%, rgba(255,255,255,.16), transparent 20%), linear-gradient(145deg, var(--bird-head), var(--bird-body-2));
+  z-index: 2;
+}
+.bird-wing {
+  left: 45%;
+  top: 45%;
+  width: 28%;
+  height: 31%;
+  border-radius: 58% 34% 58% 42% / 42% 58% 42% 58%;
+  background: linear-gradient(145deg, rgba(255,255,255,.14), transparent 30%), var(--bird-wing);
+  transform: rotate(-12deg);
+  z-index: 3;
+}
+.bird-tail {
+  left: 69%;
+  top: 48%;
+  width: 28%;
+  height: 20%;
+  border-radius: 78% 18% 72% 28%;
+  background: linear-gradient(135deg, var(--bird-body), var(--bird-body-2));
+  transform: rotate(17deg);
+  transform-origin: 0 50%;
+}
+.bird-beak {
+  left: 8%;
+  top: 36%;
+  width: 20%;
+  height: 14%;
+  background: linear-gradient(90deg, #fde68a, var(--bird-beak));
+  clip-path: polygon(0 50%, 100% 0, 88% 100%);
+  z-index: 3;
+}
+.bird-eye {
+  left: 32%;
+  top: 32%;
+  width: 8%;
+  height: 8%;
+  border-radius: 50%;
+  background: var(--bird-eye);
+  box-shadow: inset -.02em -.02em 0 rgba(0,0,0,.75), 0 0 .08em rgba(255,255,255,.5);
+  z-index: 4;
+}
+.bird-foot {
+  top: 81%;
+  width: 12%;
+  height: 8%;
+  border-bottom: .035em solid var(--bird-foot);
+  border-left: .035em solid var(--bird-foot);
+  transform: rotate(-8deg);
+  z-index: 4;
+}
+.bird-foot.left { left: 39%; }
+.bird-foot.right { left: 57%; }
+.raven-perch[data-hat="none"] .raven-hat,
+.companion-preview[data-hat="none"] .raven-hat { display: none; }
 .raven-hat {
   position: absolute;
   left: 50%;
@@ -533,6 +633,7 @@ button, .file-label {
 .cosmetic-card.equipped { border-color: rgba(52,211,153,.55); box-shadow: 0 0 20px rgba(52,211,153,.12); }
 .cosmetic-card.locked { opacity: .45; filter: grayscale(1); cursor: not-allowed; }
 .companion-preview .bird-emoji {
+  z-index: 2;
   font-size: 74px;
   filter: drop-shadow(0 16px 24px rgba(0,0,0,.45));
 }
@@ -671,6 +772,7 @@ button, .file-label {
 .companion-preview .perch-decoration,
 .companion-preview::before,
 .companion-preview::after {
+  z-index: 1;
   pointer-events: none;
 }
 .raven-perch[data-perch="twig"] .perch-stick,
@@ -913,6 +1015,15 @@ button, .file-label {
   background: radial-gradient(circle, #fef3c7 0 18%, #f472b6 20% 38%, transparent 40%),
     conic-gradient(from 20deg, #f472b6 0 15%, transparent 15% 25%, #fb7185 25% 40%, transparent 40% 52%, #f9a8d4 52% 67%, transparent 67% 78%, #fb7185 78% 92%, transparent 92%);
 }
+.companion-preview[data-hat="witch"] .raven-hat { left: 48%; top: 28%; transform: translate(-56%, -52%) rotate(-14deg); }
+.companion-preview[data-hat="crown"] .raven-hat { left: 48%; top: 29%; transform: translate(-45%, -54%) rotate(8deg); }
+.companion-preview[data-hat="party"] .raven-hat { left: 48%; top: 27%; transform: translate(-34%, -52%) rotate(16deg); }
+.companion-preview[data-hat="cap"] .raven-hat { left: 48%; top: 29%; transform: translate(-48%, -50%) rotate(-7deg); }
+.companion-preview[data-hat="flower"] .raven-hat { left: 48%; top: 31%; transform: translate(-18%, -42%) rotate(-10deg); }
+.raven-perch[data-bird="parrot"] .raven-hat,
+.companion-preview[data-bird="parrot"] .raven-hat { filter: drop-shadow(0 .08em .1em rgba(72,45,8,.32)); }
+.raven-perch[data-bird="parrot"][data-hat="witch"] .raven-hat { transform: translate(-58%, -50%) rotate(-12deg); }
+.raven-perch[data-bird="parrot"][data-hat="crown"] .raven-hat { transform: translate(-48%, -54%) rotate(5deg); }
 .raven-perch[data-aura="rainbow"] .perch-raven,
 .companion-preview[data-aura="rainbow"] { text-shadow: 0 0 16px rgba(239,68,68,.7), 0 0 28px rgba(59,130,246,.6), 0 0 38px rgba(34,197,94,.45); }
 .raven-perch[data-aura="coffee"] .perch-raven,

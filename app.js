@@ -77,6 +77,8 @@ areas.forEach(area => {
 });
 
 const cosmeticCatalog = [
+  { id: 'bird-raven', type: 'bird', icon: '🐦‍⬛', title: 'Ворон', value: 'raven', starter: true },
+  { id: 'bird-parrot', type: 'bird', icon: '🦜', title: 'Попуг', value: 'parrot', starter: true },
   { id: 'hat-none', type: 'hat', icon: '—', title: 'Без шляпы', value: 'none', starter: true },
   { id: 'hat-witch', type: 'hat', icon: '◢', title: 'Ведьмина шляпа', value: 'witch' },
   { id: 'hat-crown', type: 'hat', icon: '♛', title: 'Корона хаоса', value: 'crown' },
@@ -113,8 +115,8 @@ function loadCompanionState() {
     totalKeys: 0,
     totalClicks: 0,
     lastRewardAt: 0,
-    inventory: ['hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
-    equipped: { hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
+    inventory: ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none', 'wallpaper-none'],
+    equipped: { bird: null, hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem(COMPANION_KEY) || '{}');
@@ -168,13 +170,16 @@ function applyCompanionCosmetics() {
   const perch = document.querySelector('.raven-perch');
   const preview = document.querySelector('#companionPreview');
   const target = companionState.equipped || {};
+  const bird = target.bird || (productivityState.theme === 'parrot' ? 'parrot' : 'raven');
   document.body.dataset.wallpaper = target.wallpaper || 'none';
   if (perch) {
+    perch.dataset.bird = bird;
     perch.dataset.hat = target.hat || 'none';
     perch.dataset.perch = target.perch || 'twig';
     perch.dataset.aura = target.aura || 'none';
   }
   if (preview) {
+    preview.dataset.bird = bird;
     preview.dataset.hat = target.hat || 'none';
     preview.dataset.perch = target.perch || 'twig';
     preview.dataset.aura = target.aura || 'none';
@@ -241,7 +246,10 @@ function renderCosmeticGrid() {
   grid.innerHTML = '';
   cosmeticCatalog.forEach(item => {
     const owned = companionState.inventory.includes(item.id);
-    const equipped = companionState.equipped?.[item.type] === item.value;
+    const equippedValue = item.type === 'bird'
+      ? (companionState.equipped?.bird || (productivityState.theme === 'parrot' ? 'parrot' : 'raven'))
+      : companionState.equipped?.[item.type];
+    const equipped = equippedValue === item.value;
     const node = document.createElement('button');
     node.type = 'button';
     node.className = `cosmetic-card${owned ? '' : ' locked'}${equipped ? ' equipped' : ''}`;
@@ -280,9 +288,7 @@ function streakDays(map) {
 }
 function applyTheme() {
   document.body.classList.toggle('parrot-mode', productivityState.theme === 'parrot');
-  const bird = productivityState.theme === 'parrot' ? '🦜' : '🐦‍⬛';
-  document.querySelector('#perchRaven .bird-emoji')?.replaceChildren(document.createTextNode(bird));
-  document.querySelector('#companionPreview .bird-emoji')?.replaceChildren(document.createTextNode(bird));
+  applyCompanionCosmetics();
   if (themeBtn) themeBtn.textContent = productivityState.theme === 'parrot' ? '🌙 Raven-mode' : '☀️ Попугай-mode';
 }
 function startFocusSession() {
