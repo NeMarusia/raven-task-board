@@ -502,6 +502,12 @@ button, .file-label {
   align-items: flex-start;
   margin-bottom: 18px;
 }
+.companion-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
 .companion-stage {
   display: grid;
   grid-template-columns: 180px 1fr;
@@ -519,6 +525,12 @@ button, .file-label {
   background: radial-gradient(circle at 50% 34%, rgba(167,139,250,.2), transparent 42%), rgba(255,255,255,.04);
   font-size: 74px;
   filter: drop-shadow(0 16px 24px rgba(0,0,0,.45));
+}
+.companion-preview.bongo-image-mode {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 .companion-preview .bongo-sprite {
   width: min(142px, 78%);
@@ -1575,7 +1587,7 @@ body.parrot-mode .cosmetic-card.locked {
   filter: grayscale(.45) saturate(.78);
   background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(229,231,235,.42));
 }
-body.parrot-mode .companion-preview {
+body.parrot-mode .companion-preview:not(.bongo-image-mode) {
   background:
     radial-gradient(circle at 50% 34%, rgba(34,197,94,.20), transparent 40%),
     radial-gradient(circle at 70% 12%, rgba(14,165,233,.18), transparent 34%),
