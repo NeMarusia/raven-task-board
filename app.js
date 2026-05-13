@@ -54,7 +54,6 @@ const achievementCount = document.querySelector('#achievementCount');
 const companionBtn = document.querySelector('#companionBtn');
 const companionDialog = document.querySelector('#companionDialog');
 const companionClose = document.querySelector('#companionClose');
-const companionPreviewUnlock = document.querySelector('#companionPreviewUnlock');
 const companionCount = document.querySelector('#companionCount');
 const personalitySelect = document.querySelector('#personalitySelect');
 const themeBtn = document.querySelector('#themeBtn');
@@ -76,11 +75,6 @@ areas.forEach(area => {
   areaSelect.append(option);
   if (editArea) editArea.append(option.cloneNode(true));
 });
-
-const previewParams = new URLSearchParams(window.location.search);
-let previewUnlockCosmetics = previewParams.get('preview') === 'cosmetics'
-  || previewParams.get('unlock') === 'cosmetics'
-  || sessionStorage.getItem('raven-task-board:preview-cosmetics') === '1';
 
 const cosmeticCatalog = [
   { id: 'bird-raven', type: 'bird', icon: '🐦‍⬛', title: 'Ворон', value: 'raven', starter: true },
@@ -114,16 +108,12 @@ function loadCompanionState() {
     totalKeys: 0,
     totalClicks: 0,
     lastRewardAt: 0,
-    inventory: previewUnlockCosmetics
-      ? cosmeticCatalog.map(item => item.id)
-      : ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none'],
+    inventory: ['bird-raven', 'bird-parrot', 'hat-none', 'perch-twig', 'aura-none'],
     equipped: { bird: null, hat: 'none', perch: 'twig', aura: 'none', wallpaper: 'none' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem(COMPANION_KEY) || '{}');
-    const inventory = previewUnlockCosmetics
-      ? cosmeticCatalog.map(item => item.id)
-      : Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])]));
+    const inventory = Array.from(new Set([...(fallback.inventory || []), ...(saved.inventory || [])]));
     return {
       ...fallback,
       ...saved,
@@ -257,20 +247,12 @@ personalitySelect?.addEventListener('change', () => {
   holdRavenMood(ravenSay(), 5200);
 });
 
-companionPreviewUnlock?.addEventListener('click', () => {
-  previewUnlockCosmetics = true;
-  sessionStorage.setItem('raven-task-board:preview-cosmetics', '1');
-  companionState.inventory = cosmeticCatalog.map(item => item.id);
-  renderCompanion();
-  holdRavenMood('Открыл витрину примерки. Это не прогрессия, это примерочная с отмычкой.', 5200);
-});
-
 function renderCosmeticGrid() {
   const grid = document.querySelector('#cosmeticGrid');
   if (!grid) return;
   grid.innerHTML = '';
   cosmeticCatalog.forEach(item => {
-    const owned = previewUnlockCosmetics || companionState.inventory.includes(item.id);
+    const owned = companionState.inventory.includes(item.id);
     const equippedValue = item.type === 'bird'
       ? (companionState.equipped?.bird || (productivityState.theme === 'parrot' ? 'parrot' : 'raven'))
       : companionState.equipped?.[item.type];
