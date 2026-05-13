@@ -221,6 +221,7 @@ button, .file-label {
   -webkit-user-drag: none;
   pointer-events: none;
 }
+.raven-perch .perch-stick,
 .raven-perch.bongo-image-mode .bird-emoji,
 .raven-perch.bongo-image-mode .raven-hat,
 .raven-perch.bongo-image-mode .perch-stick,

@@ -191,6 +191,8 @@ function applyCompanionCosmetics() {
     root.dataset.hat = target.hat || 'none';
     root.dataset.perch = target.perch || 'twig';
     root.dataset.aura = target.aura || 'none';
+    const legacyPerch = root.querySelector('.perch-stick');
+    if (legacyPerch) legacyPerch.hidden = true;
     const img = root.querySelector('.bongo-sprite');
     if (img && img.getAttribute('src') !== src) img.setAttribute('src', src);
   }
